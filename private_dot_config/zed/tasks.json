@@ -1,0 +1,26 @@
+[
+  {
+    "label": "rspec",
+    "command": "bundle exec rspec",
+    "args": ["\"$ZED_RELATIVE_FILE:$ZED_ROW\""],
+    "tags": ["ruby-test"]
+  },
+  {
+    "label": "rspec (visual)",
+    "command": "HEADLESS=0 bundle exec rspec",
+    "args": ["\"$ZED_RELATIVE_FILE:$ZED_ROW\""],
+    "tags": ["ruby-test"]
+  },
+  {
+    "label": "rspec (slowmo)",
+    "command": "HEADLESS=0 SLOWMO=0.1 bundle exec rspec",
+    "args": ["\"$ZED_RELATIVE_FILE:$ZED_ROW\""],
+    "tags": ["ruby-test"]
+  },
+  {
+    "label": "rspec (with credentials)",
+    "command": "op run -- bundle exec rspec",
+    "args": ["\"$ZED_RELATIVE_FILE:$ZED_ROW\""],
+    "tags": ["ruby-test"]
+  }
+]
