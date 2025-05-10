@@ -1,6 +1,8 @@
 [tools]
+flutter = "latest"
 go = "latest"
 "go:github.com/lasorda/protobuf-language-server" = "latest"
+python = "latest"
 ruby = "3.4.1"
 
 [settings]
