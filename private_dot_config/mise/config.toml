@@ -1,9 +1,12 @@
 [tools]
 flutter = "latest"
-go = "latest"
-"go:github.com/lasorda/protobuf-language-server" = "latest"
-python = "latest"
-ruby = "3.4.1"
+go = "1.24.3"
+"go:github.com/lasorda/protobuf-language-server" = "0.1.1"
+java = "liberica-21.0.7+9"
+jq = "latest"
+python = "3.13.1"
+ruby = "3.4.3"
+yq = "latest"
 
 [settings]
 experimental = true
