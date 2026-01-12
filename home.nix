@@ -146,5 +146,10 @@ in {
     };
   };
 
+  programs.nix-index = {
+    enable = true;
+    symlinkToCacheHome = true;
+  };
+
   programs.home-manager.enable = true;
 }

@@ -20,10 +20,13 @@
       url = "github:homebrew/homebrew-cask";
       flake = false;
     };
+
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, nix-darwin, home-manager, nix-homebrew
-    , homebrew-core, homebrew-cask }:
+    , homebrew-core, homebrew-cask, nix-index-database }:
     let
       system-config = { pkgs, ... }: {
         nix.enable = false;
@@ -45,6 +48,7 @@
         environment.systemPackages = [
           pkgs._1password-cli
           pkgs.bun
+          pkgs.comma
           pkgs.mas
           pkgs.ngrok
           pkgs.nodejs_22
@@ -93,12 +97,14 @@
               name = "slack";
               greedy = true;
             }
+            "tailscale"
             "utm"
             {
               name = "zed";
               greedy = true;
             }
             "zoom"
+            "zen"
           ];
           masApps = {
             "1Password for Safari" = 1569813296;
@@ -155,6 +161,8 @@
         home-manager.users.zengraf = ./home.nix;
 
         home-manager.backupFileExtension = "bak";
+
+        home-manager.sharedModules = [ nix-index-database.homeModules.default ];
       };
 
       homebrew-config = {
