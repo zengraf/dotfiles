@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 let
   mkBiomeConfig = lang: {
@@ -18,64 +18,13 @@ let
   };
 
   biomeLanguagesWithActions = [ "JavaScript" "TypeScript" "TSX" ];
-
   biomeLanguagesOnly = [ "JSON" "JSONC" "CSS" "GraphQL" ];
 
-  biomeConfigWithActions = builtins.listToAttrs
-    (map mkBiomeConfigWithActions biomeLanguagesWithActions);
-  biomeConfigOnly = builtins.listToAttrs (map mkBiomeConfig biomeLanguagesOnly);
-
-  biomeConfig = biomeConfigWithActions // biomeConfigOnly;
+  biomeConfig =
+    builtins.listToAttrs (map mkBiomeConfigWithActions biomeLanguagesWithActions)
+    // builtins.listToAttrs (map mkBiomeConfig biomeLanguagesOnly);
 in {
-  home.stateVersion = "25.05";
-
-  home.username = "zengraf";
-  home.homeDirectory = "/Users/zengraf";
-
-  home.packages = [
-    pkgs.claude-code
-    pkgs.delta
-    pkgs.direnv
-    pkgs.fzf
-    pkgs.google-cloud-sdk
-    pkgs.gnupg
-    pkgs.nil
-    pkgs.nixfmt-classic
-    pkgs.tig
-  ];
-
-  programs.git = {
-    enable = true;
-
-    extraConfig = {
-      user.name = "Hlib Hraif";
-      user.email = "hlib.hraif@protonmail.com";
-      user.signingkey = "CCAA175508934029";
-
-      commit.gpgsign = true;
-
-      core.pager = "delta";
-      interactive.diffFilter = "delta --color-only";
-      delta.navigate = true;
-      merge.conflictStyle = "zdiff3";
-    };
-  };
-
-  programs.zsh = {
-    enable = true;
-
-    oh-my-zsh = {
-      enable = true;
-      theme = "robbyrussell";
-      plugins = [ "git" "direnv" "docker-compose" "macos" "sudo" "z" ];
-    };
-
-    initContent = ''
-      export EDITOR="vim"
-      source <(fzf --zsh)
-      source $HOME/.config/op/plugins.sh
-    '';
-  };
+  home.packages = with pkgs; [ nil nixfmt-classic ];
 
   programs.zed-editor = {
     enable = true;
@@ -145,11 +94,4 @@ in {
       };
     };
   };
-
-  programs.nix-index = {
-    enable = true;
-    symlinkToCacheHome = true;
-  };
-
-  programs.home-manager.enable = true;
 }
