@@ -1,5 +1,5 @@
 { pkgs, ... }: {
-  home.packages = with pkgs; [ direnv fzf vim z ];
+  home.packages = with pkgs; [ direnv fzf vim ];
 
   programs.zsh = {
     enable = true;
