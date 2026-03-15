@@ -1,4 +1,5 @@
 { pkgs, username, ... }: {
+  nixpkgs.overlays = [ (import ../../overlays/mongodb-no-avx.nix) ];
   imports = [
     ./hardware-configuration.nix
     ../../modules/nixos/tailscale.nix
