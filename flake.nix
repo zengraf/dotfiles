@@ -38,7 +38,7 @@
           modules = [
             ./modules/common.nix
             ./modules/darwin
-            ./modules/home-manager
+            ./modules/home-manager.nix
             ./hosts/${hostname}
             home-manager.darwinModules.home-manager
             nix-homebrew.darwinModules.nix-homebrew
@@ -58,7 +58,7 @@
             ./hosts/${hostname}
           ] ++ nixpkgs.lib.optionals (username != null) [
             home-manager.nixosModules.home-manager
-            ./modules/home-manager
+            ./modules/home-manager.nix
           ];
         };
     in {
