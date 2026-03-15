@@ -36,7 +36,7 @@
           inherit system;
           specialArgs = { inherit self inputs hostname username; };
           modules = [
-            ./modules/common
+            ./modules/common.nix
             ./modules/darwin
             ./modules/home-manager
             ./hosts/${hostname}
@@ -54,7 +54,7 @@
           inherit system;
           specialArgs = { inherit self inputs hostname username; };
           modules = [
-            ./modules/common
+            ./modules/common.nix
             ./hosts/${hostname}
           ] ++ nixpkgs.lib.optionals (username != null) [
             home-manager.nixosModules.home-manager
