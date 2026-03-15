@@ -2,7 +2,7 @@
   services.tailscale.useRoutingFeatures = "both";
   services.tailscale.extraSetFlags = [
     "--advertise-exit-node"
-    "--advertise-routes=172.20.0.0/12"
+    "--advertise-routes=172.16.0.0/12"
   ];
 
   boot.kernel.sysctl = {
@@ -26,6 +26,8 @@
       };
     };
   };
+
+  networking.firewall.enable = false;
 
   networking.nftables.ruleset = ''
     table inet filter {
