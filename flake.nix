@@ -67,7 +67,7 @@
       };
 
       nixosConfigurations = {
-        # router = mkNixosSystem { hostname = "router"; system = "aarch64-linux"; };
+        router = mkNixosSystem { hostname = "router"; };
       };
     };
 }
