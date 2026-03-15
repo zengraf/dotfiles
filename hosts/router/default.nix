@@ -1,7 +1,6 @@
 { pkgs, username, ... }: {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/nixos
     ../../modules/nixos/tailscale.nix
     ./router.nix
     ./kea.nix
