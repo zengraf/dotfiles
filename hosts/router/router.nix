@@ -72,8 +72,8 @@
         iifname "enp2s0" tcp dport { 53, 22 } accept
 
         # Allow Unifi controller on LAN
-        iifname "enp2s0" tcp dport { 8080, 8443 } accept
-        iifname "enp2s0" udp dport 3478 accept
+        iifname "enp2s0" tcp dport { 8080, 8443, 6789 } accept
+        iifname "enp2s0" udp dport { 3478, 10001, 10101, 1900 } accept
 
         # Allow Tailscale
         udp dport 41641 accept
