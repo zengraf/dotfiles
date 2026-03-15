@@ -67,7 +67,7 @@
       };
 
       nixosConfigurations = {
-        router = mkNixosSystem { hostname = "router"; };
+        router = mkNixosSystem { hostname = "router"; username = "zengraf"; };
       };
     };
 }

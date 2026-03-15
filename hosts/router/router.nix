@@ -1,4 +1,10 @@
 { ... }: {
+  services.tailscale.useRoutingFeatures = "both";
+  services.tailscale.extraSetFlags = [
+    "--advertise-exit-node"
+    "--advertise-routes=172.20.0.0/12"
+  ];
+
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = 1;
   };
