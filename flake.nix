@@ -58,6 +58,7 @@
             ./hosts/${hostname}
           ] ++ nixpkgs.lib.optionals (username != null) [
             home-manager.nixosModules.home-manager
+            ./modules/nixos/home-manager.nix
             ./modules/home-manager.nix
           ];
         };
