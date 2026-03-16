@@ -21,6 +21,7 @@ in
             cert ${../../pki/ca.crt}
             key ${config.age.secrets.ca-key.path}
           }
+          install_trust false
         }
       }
     '';
