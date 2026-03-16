@@ -14,6 +14,7 @@ in
   services.caddy = {
     enable = true;
     globalConfig = ''
+      skip_install_trust
       pki {
         ca local {
           name "Zengraf LAN CA"
@@ -21,7 +22,6 @@ in
             cert ${../../pki/ca.crt}
             key ${config.age.secrets.ca-key.path}
           }
-          install_trust false
         }
       }
     '';
