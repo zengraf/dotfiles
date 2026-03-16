@@ -3,7 +3,7 @@
     enable = true;
     settings = {
       server = {
-        interface = [ "0.0.0.0" ];
+        interface = [ "172.20.0.1" "127.0.0.1" "100.126.112.1" ];
         access-control = [
           "127.0.0.0/8 allow"
           "172.16.0.0/12 allow"
