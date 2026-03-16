@@ -47,9 +47,4 @@ in
       };
     };
   };
-
-  systemd.services.caddy = {
-    after = [ "agenix.service" ];
-    requires = [ "agenix.service" ];
-  };
 }

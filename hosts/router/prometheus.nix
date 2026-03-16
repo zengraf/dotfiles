@@ -125,9 +125,4 @@ in
       };
     };
   };
-
-  systemd.services.unpoller = {
-    after = [ "agenix.service" ];
-    requires = [ "agenix.service" ];
-  };
 }
