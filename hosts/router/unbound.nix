@@ -3,10 +3,11 @@
     enable = true;
     settings = {
       server = {
-        interface = [ "172.20.0.1" "127.0.0.1" ];
+        interface = [ "0.0.0.0" ];
         access-control = [
           "127.0.0.0/8 allow"
           "172.16.0.0/12 allow"
+          "100.64.0.0/10 allow"
         ];
         tls-cert-bundle = "/etc/ssl/certs/ca-certificates.crt";
         extended-statistics = true;
