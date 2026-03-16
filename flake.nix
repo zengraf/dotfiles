@@ -23,10 +23,15 @@
 
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
+    agenix.url = "github:dbast/agenix/bump";
+    agenix.inputs.nixpkgs.follows = "nixpkgs";
+    agenix.inputs.darwin.follows = "nix-darwin";
   };
 
   outputs = { self, nixpkgs, nix-darwin, home-manager, nix-homebrew, ... }@inputs:
     let
+      helpers = import ./helpers.nix;
       mkDarwinSystem =
         { hostname
         , system ? "aarch64-darwin"
@@ -34,7 +39,7 @@
         }:
         nix-darwin.lib.darwinSystem {
           inherit system;
-          specialArgs = { inherit self inputs hostname username; };
+          specialArgs = { inherit self inputs hostname username helpers; };
           modules = [
             ./modules/common.nix
             ./modules/darwin
@@ -52,10 +57,11 @@
         }:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit self inputs hostname username; };
+          specialArgs = { inherit self inputs hostname username helpers; };
           modules = [
             ./modules/common.nix
             ./hosts/${hostname}
+            inputs.agenix.nixosModules.default
           ] ++ nixpkgs.lib.optionals (username != null) [
             home-manager.nixosModules.home-manager
             ./modules/nixos/home-manager.nix

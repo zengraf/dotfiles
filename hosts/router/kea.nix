@@ -1,9 +1,25 @@
 { ... }: {
+  services.kea.ctrl-agent = {
+    enable = true;
+    settings = {
+      http-host = "127.0.0.1";
+      http-port = 14461;
+      control-sockets.dhcp4 = {
+        socket-type = "unix";
+        socket-name = "/run/kea/kea-dhcp4.socket";
+      };
+    };
+  };
+
   services.kea.dhcp4 = {
     enable = true;
     settings = {
       interfaces-config = {
         interfaces = [ "enp2s0" ];
+      };
+      control-socket = {
+        socket-type = "unix";
+        socket-name = "/run/kea/kea-dhcp4.socket";
       };
       lease-database = {
         type = "memfile";

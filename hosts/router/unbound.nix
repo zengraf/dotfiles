@@ -9,11 +9,18 @@
           "172.16.0.0/12 allow"
         ];
         tls-cert-bundle = "/etc/ssl/certs/ca-certificates.crt";
+        extended-statistics = true;
 
         local-zone = [ "zengraf.arpa. static" ];
         local-data = [
           ''"router.zengraf.arpa. A 172.20.0.1"''
+          ''"dashboard.zengraf.arpa. A 172.20.0.1"''
+          ''"unifi.zengraf.arpa. A 172.20.0.1"''
         ];
+      };
+      remote-control = {
+        control-enable = true;
+        control-interface = "/run/unbound/unbound.ctl";
       };
       forward-zone = [
         {

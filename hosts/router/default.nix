@@ -7,7 +7,12 @@
     ./kea.nix
     ./unbound.nix
     ./unifi.nix
+    ./caddy.nix
+    ./prometheus.nix
+    ./grafana.nix
   ];
+
+  age.identityPaths = [ "/etc/age-key.txt" ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
