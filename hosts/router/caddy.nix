@@ -41,6 +41,9 @@ in
             issuer internal { ca local }
           }
           reverse_proxy https://localhost:8443 {
+            header_up Host localhost:8443
+            header_up Origin https://localhost:8443
+            header_up Referer https://localhost:8443/
             transport http {
               tls_insecure_skip_verify
             }
