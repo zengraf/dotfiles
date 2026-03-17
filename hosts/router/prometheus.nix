@@ -30,7 +30,7 @@ in
         enable = true;
         listenAddress = "127.0.0.1";
         port = 9167;
-        unbound.host = unbound.settings.remote-control.control-interface;
+        unbound.host = "unix://${unbound.settings.remote-control.control-interface}";
         group = unbound.group;
       };
 

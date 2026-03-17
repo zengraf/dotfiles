@@ -31,6 +31,12 @@
           editable = false;
         }
       ];
+      dashboards.settings.providers = [
+        {
+          name = "default";
+          options.path = ./dashboards;
+        }
+      ];
     };
   };
 }

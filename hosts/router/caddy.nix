@@ -22,6 +22,7 @@ in
             cert ${../../pki/ca.crt}
             key ${config.age.secrets.ca-key.path}
           }
+          intermediate_lifetime 90d
         }
       }
     '';
