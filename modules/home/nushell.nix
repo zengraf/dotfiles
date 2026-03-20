@@ -5,10 +5,11 @@
   programs.nushell = {
     enable = true;
     extraConfig = ''
+      $env.config.buffer_editor = "vim"
+      $env.config.show_banner = false
       source ${pkgs.nu_scripts}/share/nu_scripts/aliases/git/git-aliases.nu
     '';
     extraEnv = ''
-      $env.EDITOR = "vim"
       $env.PATH = ($env.PATH | prepend [
         ($env.HOME | path join ".nix-profile/bin")
         $"/etc/profiles/per-user/($env.USER)/bin"
