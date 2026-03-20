@@ -1,5 +1,13 @@
-{ pkgs, inputs, username, hostname, ... }: {
-  users.users.${username}.shell = pkgs.zsh;
+{
+  lib,
+  pkgs,
+  inputs,
+  username,
+  hostname,
+  ...
+}:
+{
+  users.users.${username}.shell = lib.mkDefault pkgs.zsh;
 
   home-manager = {
     useGlobalPkgs = true;

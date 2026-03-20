@@ -27,19 +27,40 @@
     agenix.url = "github:dbast/agenix/bump";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
     agenix.inputs.darwin.follows = "nix-darwin";
+    agenix.inputs.home-manager.follows = "home-manager";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, nix-homebrew, ... }@inputs:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nix-darwin,
+      home-manager,
+      nix-homebrew,
+      ...
+    }@inputs:
     let
       helpers = import ./helpers.nix;
       mkDarwinSystem =
-        { hostname
-        , system ? "aarch64-darwin"
-        , username ? "zengraf"
+        {
+          hostname,
+          system ? "aarch64-darwin",
+          username ? "zengraf",
+          uid ? 501,
         }:
         nix-darwin.lib.darwinSystem {
           inherit system;
-          specialArgs = { inherit self inputs hostname username helpers; };
+          specialArgs = {
+            inherit
+              self
+              inputs
+              hostname
+              system
+              username
+              uid
+              helpers
+              ;
+          };
           modules = [
             ./modules/common.nix
             ./modules/darwin
@@ -51,30 +72,45 @@
         };
 
       mkNixosSystem =
-        { hostname
-        , system ? "x86_64-linux"
-        , username ? null
+        {
+          hostname,
+          system ? "x86_64-linux",
+          username ? null,
         }:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit self inputs hostname username helpers; };
+          specialArgs = {
+            inherit
+              self
+              inputs
+              hostname
+              system
+              username
+              helpers
+              ;
+          };
           modules = [
             ./modules/common.nix
             ./hosts/${hostname}
             inputs.agenix.nixosModules.default
-          ] ++ nixpkgs.lib.optionals (username != null) [
+          ]
+          ++ nixpkgs.lib.optionals (username != null) [
             home-manager.nixosModules.home-manager
             ./modules/nixos/home-manager.nix
             ./modules/home-manager.nix
           ];
         };
-    in {
+    in
+    {
       darwinConfigurations = {
-        macbook-m4 = mkDarwinSystem { hostname = "macbook-m4"; };
+        workstation = mkDarwinSystem { hostname = "workstation"; };
       };
 
       nixosConfigurations = {
-        router = mkNixosSystem { hostname = "router"; username = "zengraf"; };
+        router = mkNixosSystem {
+          hostname = "router";
+          username = "zengraf";
+        };
       };
     };
 }

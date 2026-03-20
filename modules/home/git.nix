@@ -4,7 +4,7 @@
   programs.git = {
     enable = true;
 
-    extraConfig = {
+    settings = {
       user.name = "Hlib Hraif";
       user.email = "hlib.hraif@protonmail.com";
       user.signingkey = "CCAA175508934029";

@@ -1,29 +1,25 @@
-{ pkgs, username, ... }: {
-  networking.hostName = "macbook-m4";
-
-  nixpkgs.hostPlatform = "aarch64-darwin";
+{
+  pkgs,
+  hostname,
+  username,
+  ...
+}:
+{
+  networking.hostName = hostname;
 
   system.primaryUser = username;
 
-  environment.systemPackages = with pkgs; [
-    _1password-cli
-    bun
-    mas
-    ngrok
-    nodejs_22
-    postgresql
-    uv
-    ruby
-  ];
+  environment.shells = [ pkgs.nushell ];
+
+  users.users.${username}.shell = pkgs.nushell;
 
   homebrew = {
     enable = true;
     brews = [ "sentry-cli" ];
     casks = [
-      { name = "1password"; greedy = true; }
+      "1password"
       "adobe-acrobat-reader"
-      { name = "arc"; greedy = true; }
-      { name = "cursor"; greedy = true; }
+      "arc"
       "dbeaver-community"
       "docker-desktop"
       "drata-agent"
@@ -31,14 +27,11 @@
       "google-drive"
       "iina"
       "insomnia"
-      "loom"
-      "moonlight"
-      { name = "notion"; greedy = true; }
-      { name = "obsidian"; greedy = true; }
-      { name = "slack"; greedy = true; }
-      "tailscale"
-      "utm"
-      { name = "zed"; greedy = true; }
+      "notion"
+      "obsidian"
+      "slack"
+      "tailscale-app"
+      "zed"
       "zoom"
       "zen"
     ];
@@ -59,7 +52,7 @@
     autohide = true;
     show-recents = false;
     persistent-apps = [
-      "/Applications/Arc.app"
+      "/Applications/Zen.app"
       "/Applications/Telegram.app"
       "/Applications/Slack.app"
       "/Applications/Things3.app"
@@ -67,7 +60,6 @@
       "/Applications/Obsidian.app"
       "/Applications/Notion.app"
       "/Applications/Zed.app"
-      "/Applications/Cursor.app"
       "/Applications/Ghostty.app"
     ];
   };

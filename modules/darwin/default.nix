@@ -1,5 +1,16 @@
-{ self, pkgs, inputs, username, ... }: {
+{
+  self,
+  system,
+  pkgs,
+  inputs,
+  username,
+  uid,
+  ...
+}:
+{
   nix.enable = false;
+
+  nixpkgs.hostPlatform = system;
 
   nix-homebrew = {
     enable = true;
@@ -19,7 +30,11 @@
     touchIdAuth = true;
   };
 
-  users.users.${username}.home = "/Users/${username}";
+  users.knownUsers = [ username ];
+  users.users.${username} = {
+    inherit uid;
+    home = "/Users/${username}";
+  };
 
   system.activationScripts.extraActivation = {
     text = ''
