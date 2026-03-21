@@ -54,8 +54,11 @@ in
 
     extensions = [
       "biome"
+      "git_firefly"
+      "dart"
       "dockerfile"
       "html"
+      "kotlin"
       "make"
       "nix"
       "prisma"
@@ -66,8 +69,11 @@ in
 
     userSettings = {
       agent_servers = {
-        "claude-acp" = {
+        claude-acp = {
           type = "registry";
+          default_config_options = {
+            model = "opus";
+          };
         };
       };
 
@@ -78,21 +84,21 @@ in
       };
 
       agent = {
-        default_profile = "write";
+        default_profile = "ask";
         default_model = {
-          provider = "claude-acp";
-          model = "claude-opus-4-6";
+          provider = "copilot_chat";
+          model = "gpt-4o";
         };
       };
 
       autosave = "on_focus_change";
-      vim_mode = true;
+      helix_mode = true;
       ui_font_size = 16;
       buffer_font_size = 16;
       theme = {
         mode = "system";
-        light = "One Light";
-        dark = "One Dark";
+        light = "Fleet Light";
+        dark = "Fleet Dark";
       };
 
       languages = biomeConfig // {
