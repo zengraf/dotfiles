@@ -7,7 +7,7 @@
   ...
 }:
 {
-  users.users.${username}.shell = lib.mkDefault pkgs.zsh;
+  users.users.${username}.shell = lib.mkDefault pkgs.nushell;
 
   home-manager = {
     useGlobalPkgs = true;

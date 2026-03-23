@@ -17,7 +17,6 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "router";
   networking.useNetworkd = true;
   networking.networkmanager.enable = false;
   networking.nftables.enable = true;

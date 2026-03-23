@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, hostname, ... }: {
   nix.settings = {
     experimental-features = "nix-command flakes";
     substituters = [ "https://zengraf.cachix.org" ];
@@ -6,6 +6,10 @@
   };
 
   nixpkgs.config.allowUnfree = true;
+
+  networking.hostName = hostname;
+
+  security.pki.certificateFiles = [ ../pki/ca.crt ];
 
   environment.systemPackages = with pkgs; [ vim wget ];
 }

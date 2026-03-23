@@ -1,6 +1,9 @@
-{ username, ... }: {
+{ pkgs, username, ... }: {
   home.username = username;
   home.homeDirectory = "/Users/${username}";
 
-  programs.zsh.oh-my-zsh.plugins = [ "macos" ];
+  home.packages = with pkgs; [
+    _1password-cli
+    claude-code
+  ];
 }

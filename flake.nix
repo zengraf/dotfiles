@@ -103,6 +103,7 @@
     in
     {
       darwinConfigurations = {
+        satellite = mkDarwinSystem { hostname = "satellite"; };
         workstation = mkDarwinSystem { hostname = "workstation"; };
       };
 

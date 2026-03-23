@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ ... }: {
   imports = [
     ../../modules/home/default.nix
     ../../modules/home/darwin.nix
@@ -7,14 +7,5 @@
     ../../modules/home/zed.nix
   ];
 
-  home.packages = with pkgs; [
-    bun
-    google-cloud-sdk
-    ngrok
-    nodejs_22
-    ruby
-    uv
-  ];
-
-  home.stateVersion = "25.05";
+  home.stateVersion = "26.05";
 }

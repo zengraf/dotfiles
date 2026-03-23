@@ -12,6 +12,10 @@
 
   nixpkgs.hostPlatform = system;
 
+  system.primaryUser = username;
+
+  environment.shells = [ pkgs.nushell ];
+
   nix-homebrew = {
     enable = true;
     enableRosetta = true;
@@ -21,6 +25,34 @@
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
     };
     mutableTaps = false;
+  };
+
+  homebrew = {
+    enable = true;
+    casks = [
+      "1password"
+      "adobe-acrobat-reader"
+      "arc"
+      "dbeaver-community"
+      "docker-desktop"
+      "ghostty"
+      "google-drive"
+      "iina"
+      "obsidian"
+      "tailscale-app"
+      "zed"
+      "zen"
+    ];
+    masApps = {
+      "1Password for Safari" = 1569813296;
+      "DaisyDisk" = 411643860;
+      "Pixelmator Pro" = 1289583905;
+      "Telegram" = 747648890;
+      "Things 3" = 904280696;
+    };
+    onActivation.cleanup = "zap";
+    onActivation.autoUpdate = true;
+    onActivation.upgrade = true;
   };
 
   environment.systemPackages = with pkgs; [ mas ];
@@ -50,8 +82,10 @@
     NSGlobalDomain.InitialKeyRepeat = 25;
     NSGlobalDomain.KeyRepeat = 2;
     loginwindow.GuestEnabled = false;
+    dock.autohide = true;
+    dock.show-recents = false;
+    finder.FXPreferredViewStyle = "clmv";
   };
 
   system.configurationRevision = self.rev or self.dirtyRev or null;
-  system.stateVersion = 6;
 }
