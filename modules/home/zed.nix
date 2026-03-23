@@ -54,9 +54,10 @@ in
 
     extensions = [
       "biome"
-      "git_firefly"
       "dart"
       "dockerfile"
+      "fleet-themes"
+      "git-firefly"
       "html"
       "kotlin"
       "make"
