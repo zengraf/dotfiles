@@ -114,7 +114,7 @@ in
         };
         Python = {
           language_servers = [
-            "pyright"
+            "basedpyright"
             "ruff"
           ];
           formatter = [
@@ -158,9 +158,9 @@ in
             plugins.mypy.enabled = true;
           };
         };
-        pyright = {
+        basedpyright = {
           settings = {
-            "python.analysis.typeCheckingMode" = "basic";
+            "basedpyright.analysis.typeCheckingMode" = "all";
           };
         };
         rubocop = {
