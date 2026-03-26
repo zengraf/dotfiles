@@ -3,7 +3,6 @@
   home.packages = with pkgs; [
     claude-code
     delta
-    gnupg
     tig
   ];
 
@@ -13,10 +12,6 @@
   };
 
   programs.git.settings = {
-    user.signingkey = "CCAA175508934029";
-
-    commit.gpgsign = true;
-
     core.pager = "delta";
     interactive.diffFilter = "delta --color-only";
     delta.navigate = true;
