@@ -117,21 +117,15 @@ in
             "basedpyright"
             "ruff"
           ];
-          formatter = [
-            { code_action = "source.fixAll.ruff"; }
-            { code_action = "source.organizeImports.ruff"; }
-            {
-              language_server = {
-                name = "ruff";
-              };
-            }
-            {
-              external = {
-                command = "black";
-                arguments = [ "-" ];
-              };
-            }
-          ];
+          code_actions_on_format = {
+            "source.fixAll.ruff" = true;
+            "source.organizeImports.ruff" = true;
+          };
+          formatter = {
+            language_server = {
+              name = "ruff";
+            };
+          };
         };
         Ruby = {
           language_servers = [
