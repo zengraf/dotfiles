@@ -69,6 +69,8 @@ in
     ];
 
     userSettings = {
+      load_direnv = "direct";
+
       agent_servers = {
         claude-acp = {
           type = "registry";
