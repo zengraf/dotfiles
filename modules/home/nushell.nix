@@ -7,6 +7,11 @@
     extraConfig = ''
       $env.config.buffer_editor = "vim"
       $env.config.show_banner = false
+      $env.config.history = {
+        max_size: 100_000
+        sync_on_enter: true
+        file_format: "sqlite"
+      }
       source ${pkgs.nu_scripts}/share/nu_scripts/aliases/git/git-aliases.nu
     '';
     extraEnv = ''
