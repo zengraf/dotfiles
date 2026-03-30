@@ -3,6 +3,8 @@
   ...
 }:
 {
+  imports = [ ../../modules/darwin/aerospace.nix ];
+
   homebrew = {
     casks = [
       "android-studio"
