@@ -23,6 +23,7 @@
     taps = {
       "homebrew/homebrew-core" = inputs.homebrew-core;
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
+      "nikitabobko/homebrew-tap" = inputs.homebrew-aerospace;
     };
     mutableTaps = false;
   };
@@ -33,12 +34,13 @@
       "1password"
       "adobe-acrobat-reader"
       "arc"
-      "dbeaver-community"
       "docker-desktop"
       "ghostty"
       "google-drive"
       "iina"
+      "nikitabobko/tap/aerospace"
       "obsidian"
+      "tablepro"
       "tailscale-app"
       "zed"
       "zen"

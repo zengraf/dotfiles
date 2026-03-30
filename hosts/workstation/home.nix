@@ -6,6 +6,7 @@
     ../../modules/home/git.nix
     ../../modules/home/gpg.nix
     ../../modules/home/nushell.nix
+    ../../modules/home/aerospace.nix
     ../../modules/home/zed.nix
   ];
 
