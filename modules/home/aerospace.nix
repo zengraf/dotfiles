@@ -2,7 +2,7 @@
 {
   programs.aerospace = {
     enable = true;
-    package = null;
+    launchd.enable = true;
 
     settings = {
       enable-normalization-flatten-containers = true;

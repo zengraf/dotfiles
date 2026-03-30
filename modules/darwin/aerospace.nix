@@ -1,10 +1,5 @@
-{ inputs, ... }:
+{ ... }:
 {
-  nix-homebrew.taps."nikitabobko/homebrew-tap" = inputs.homebrew-aerospace;
-  homebrew.casks = [ "nikitabobko/tap/aerospace" ];
-
-  system.defaults.loginwindow.LoginItems = [ "/Applications/AeroSpace.app" ];
-
   # Disable Mission Control ctrl+arrow shortcuts to free them for aerospace
   system.defaults.CustomUserPreferences."com.apple.symbolichotkeys" = {
     AppleSymbolicHotKeys = {
