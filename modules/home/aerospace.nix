@@ -120,9 +120,9 @@
         ctrl-f = "fullscreen";
         ctrl-shift-f = "layout floating tiling";
 
-        ctrl-1 = "workspace C";
-        ctrl-2 = "workspace T";
-        ctrl-3 = "workspace W";
+        ctrl-1 = "workspace W";
+        ctrl-2 = "workspace C";
+        ctrl-3 = "workspace T";
         ctrl-4 = "workspace D";
         ctrl-5 = "workspace M";
         ctrl-6 = "workspace N";
