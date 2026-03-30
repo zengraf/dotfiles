@@ -76,6 +76,10 @@
           run = "move-node-to-workspace D";
         }
         {
+          "if".app-id = "com.tinyspeck.slackmacgap";
+          run = "move-node-to-workspace M";
+        }
+        {
           "if".app-id = "ru.keepcoder.Telegram";
           run = "move-node-to-workspace M";
         }
