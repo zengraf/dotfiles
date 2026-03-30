@@ -102,41 +102,41 @@
       ];
 
       mode.main.binding = {
-        alt-left = "focus left";
-        alt-down = "focus down";
-        alt-up = "focus up";
-        alt-right = "focus right";
+        ctrl-left = "focus left";
+        ctrl-down = "focus down";
+        ctrl-up = "focus up";
+        ctrl-right = "focus right";
 
-        alt-shift-left = "move left";
-        alt-shift-down = "move down";
-        alt-shift-up = "move up";
-        alt-shift-right = "move right";
+        ctrl-shift-left = "move left";
+        ctrl-shift-down = "move down";
+        ctrl-shift-up = "move up";
+        ctrl-shift-right = "move right";
 
-        alt-minus = "resize smart -50";
-        alt-equal = "resize smart +50";
+        ctrl-minus = "resize smart -50";
+        ctrl-equal = "resize smart +50";
 
-        alt-slash = "layout tiles horizontal vertical";
-        alt-comma = "layout accordion horizontal vertical";
-        alt-f = "fullscreen";
-        alt-shift-f = "layout floating tiling";
+        ctrl-slash = "layout tiles horizontal vertical";
+        ctrl-comma = "layout accordion horizontal vertical";
+        ctrl-f = "fullscreen";
+        ctrl-shift-f = "layout floating tiling";
 
-        alt-1 = "workspace C";
-        alt-2 = "workspace T";
-        alt-3 = "workspace W";
-        alt-4 = "workspace D";
-        alt-5 = "workspace M";
-        alt-6 = "workspace N";
-        alt-7 = "workspace V";
+        ctrl-1 = "workspace C";
+        ctrl-2 = "workspace T";
+        ctrl-3 = "workspace W";
+        ctrl-4 = "workspace D";
+        ctrl-5 = "workspace M";
+        ctrl-6 = "workspace N";
+        ctrl-7 = "workspace V";
 
-        alt-shift-1 = "move-node-to-workspace C";
-        alt-shift-2 = "move-node-to-workspace T";
-        alt-shift-3 = "move-node-to-workspace W";
-        alt-shift-4 = "move-node-to-workspace D";
-        alt-shift-5 = "move-node-to-workspace M";
-        alt-shift-6 = "move-node-to-workspace N";
-        alt-shift-7 = "move-node-to-workspace V";
+        ctrl-shift-1 = "move-node-to-workspace C";
+        ctrl-shift-2 = "move-node-to-workspace T";
+        ctrl-shift-3 = "move-node-to-workspace W";
+        ctrl-shift-4 = "move-node-to-workspace D";
+        ctrl-shift-5 = "move-node-to-workspace M";
+        ctrl-shift-6 = "move-node-to-workspace N";
+        ctrl-shift-7 = "move-node-to-workspace V";
 
-        alt-shift-semicolon = "mode service";
+        ctrl-shift-semicolon = "mode service";
       };
 
       mode.service = {
@@ -149,19 +149,19 @@
             "flatten-workspace-tree"
             "mode main"
           ];
-          alt-shift-left = [
+          ctrl-shift-left = [
             "join-with left"
             "mode main"
           ];
-          alt-shift-down = [
+          ctrl-shift-down = [
             "join-with down"
             "mode main"
           ];
-          alt-shift-up = [
+          ctrl-shift-up = [
             "join-with up"
             "mode main"
           ];
-          alt-shift-right = [
+          ctrl-shift-right = [
             "join-with right"
             "mode main"
           ];
