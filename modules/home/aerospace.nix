@@ -5,8 +5,6 @@
     package = null;
 
     settings = {
-      start-at-login = true;
-
       enable-normalization-flatten-containers = true;
       enable-normalization-opposite-orientation-for-nested-containers = true;
 
