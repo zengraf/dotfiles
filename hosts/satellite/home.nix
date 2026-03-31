@@ -8,6 +8,7 @@
     ../../modules/home/nushell.nix
     ../../modules/home/aerospace.nix
     ../../modules/home/zed.nix
+    ../../modules/home/ghostty.nix
   ];
 
   home.stateVersion = "26.05";
