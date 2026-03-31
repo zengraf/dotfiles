@@ -27,7 +27,7 @@
       ];
       background = "#18191b";
       foreground = "#e0e1e4";
-      cursor-color = "#4b8dec";
+      cursor-color = "#e0e1e4";
       cursor-text = "#18191b";
       selection-background = "#3e4147";
       selection-foreground = "#e0e1e4";
