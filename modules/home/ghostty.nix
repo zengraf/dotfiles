@@ -2,6 +2,10 @@
   programs.ghostty = {
     enable = true;
     package = null;
+    settings = {
+      theme = "fleet-dark";
+      scrollback-limit = 100000;
+    };
     themes.fleet-dark = {
       palette = [
         "0=#4a4b4d"
