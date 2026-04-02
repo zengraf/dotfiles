@@ -1,10 +1,11 @@
-{ ... }: {
+{ ... }:
+{
   programs.ghostty = {
     enable = true;
     package = null;
     settings = {
       theme = "fleet-dark";
-      scrollback-limit = 100000;
+      scrollback-limit = 10000000;
     };
     themes.fleet-dark = {
       palette = [
