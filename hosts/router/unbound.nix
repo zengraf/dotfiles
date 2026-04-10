@@ -12,6 +12,15 @@
         tls-cert-bundle = "/etc/ssl/certs/ca-certificates.crt";
         extended-statistics = true;
 
+        msg-cache-size = "50m";
+        rrset-cache-size = "100m";
+        cache-min-ttl = 300;
+        cache-max-ttl = 86400;
+        neg-cache-ttl = 3600;
+        prefetch = true;
+        prefetch-key = true;
+        outgoing-num-tcp = 10;
+
         local-zone = [ "zengraf.arpa. static" ];
         local-data = [
           ''"router.zengraf.arpa. A 172.20.0.1"''

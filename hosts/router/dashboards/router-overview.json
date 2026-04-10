@@ -244,17 +244,77 @@
       }
     },
     {
+      "id": 26,
+      "type": "timeseries",
+      "title": "CPU Temperature",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 },
+      "targets": [
+        {
+          "expr": "node_hwmon_temp_celsius",
+          "legendFormat": "{{chip}} {{sensor}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 85 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 27,
+      "type": "timeseries",
+      "title": "Thermal Zone Temperature",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 },
+      "targets": [
+        {
+          "expr": "node_thermal_zone_temp",
+          "legendFormat": "{{type}} zone{{zone}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 85 }
+            ]
+          }
+        }
+      }
+    },
+    {
       "id": 11,
       "type": "row",
       "title": "Network Traffic",
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 }
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 }
     },
     {
       "id": 12,
       "type": "timeseries",
       "title": "Interface Traffic",
-      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 19 },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 27 },
       "targets": [
         {
           "expr": "rate(node_network_receive_bytes_total{device!~\"lo|veth.*\"}[5m]) * 8",
@@ -281,7 +341,7 @@
       "id": 13,
       "type": "timeseries",
       "title": "Conntrack Entries",
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 19 },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 27 },
       "targets": [
         {
           "expr": "node_nf_conntrack_entries",
@@ -320,13 +380,13 @@
       "type": "row",
       "title": "DNS (Unbound)",
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 27 }
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 35 }
     },
     {
       "id": 15,
       "type": "timeseries",
       "title": "Query Rate",
-      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 28 },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 36 },
       "targets": [
         {
           "expr": "sum(rate(unbound_queries_total[5m]))",
@@ -348,7 +408,7 @@
       "id": 16,
       "type": "stat",
       "title": "Cache Hit Ratio",
-      "gridPos": { "h": 8, "w": 4, "x": 6, "y": 28 },
+      "gridPos": { "h": 8, "w": 4, "x": 6, "y": 36 },
       "targets": [
         {
           "expr": "sum(rate(unbound_cache_hits_total[5m])) / (sum(rate(unbound_cache_hits_total[5m])) + sum(rate(unbound_cache_misses_total[5m])))",
@@ -378,7 +438,7 @@
       "id": 17,
       "type": "timeseries",
       "title": "Answer RCodes",
-      "gridPos": { "h": 8, "w": 8, "x": 10, "y": 28 },
+      "gridPos": { "h": 8, "w": 8, "x": 10, "y": 36 },
       "targets": [
         {
           "expr": "sum by (rcode) (rate(unbound_answer_rcodes_total[5m]))",
@@ -401,7 +461,7 @@
       "id": 18,
       "type": "stat",
       "title": "Avg Recursion Time",
-      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 28 },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 36 },
       "targets": [
         {
           "expr": "unbound_recursion_time_seconds_avg",
@@ -424,13 +484,13 @@
       "type": "row",
       "title": "DHCP (Kea)",
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 36 }
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 44 }
     },
     {
       "id": 20,
       "type": "stat",
       "title": "Active Leases",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 37 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 45 },
       "targets": [
         {
           "expr": "kea_dhcp4_addresses_assigned_total{pool=\"\"}",
@@ -450,7 +510,7 @@
       "id": 21,
       "type": "bargauge",
       "title": "Pool Utilization",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 37 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 45 },
       "targets": [
         {
           "expr": "kea_dhcp4_addresses_assigned_total{pool=\"\"} / kea_dhcp4_addresses_total{pool=\"\"}",
@@ -483,13 +543,13 @@
       "type": "row",
       "title": "UniFi Network",
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 45 }
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 53 }
     },
     {
       "id": 23,
       "type": "stat",
       "title": "Connected Clients",
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 46 },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 54 },
       "targets": [
         {
           "expr": "count(unpoller_client_transmit_bytes_total) by (site_name)",
@@ -509,7 +569,7 @@
       "id": 24,
       "type": "stat",
       "title": "Device Uptime",
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 46 },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 54 },
       "targets": [
         {
           "expr": "unpoller_device_uptime_seconds",
@@ -531,7 +591,7 @@
       "id": 25,
       "type": "timeseries",
       "title": "Device Throughput",
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 46 },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 54 },
       "targets": [
         {
           "expr": "rate(unpoller_device_receive_bytes_total[5m]) * 8",
