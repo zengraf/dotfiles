@@ -16,7 +16,7 @@
         rrset-cache-size = "100m";
         cache-min-ttl = 300;
         cache-max-ttl = 86400;
-        neg-cache-ttl = 3600;
+        cache-max-negative-ttl = 3600;
         prefetch = true;
         prefetch-key = true;
         outgoing-num-tcp = 10;
