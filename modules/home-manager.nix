@@ -7,7 +7,7 @@
   ...
 }:
 {
-  users.users.${username}.shell = lib.mkDefault pkgs.nushell;
+  users.users.${username}.shell = pkgs.nushell;
 
   home-manager = {
     useGlobalPkgs = true;
