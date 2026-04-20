@@ -10,6 +10,9 @@
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
+    stdlib = ''
+      eval "$(${pkgs.devenv}/bin/devenv direnvrc)"
+    '';
   };
 
   programs.git.settings = {
