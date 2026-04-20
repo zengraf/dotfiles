@@ -65,6 +65,7 @@ in
       "prisma"
       "scss"
       "sql"
+      "svelte"
       "toml"
     ];
 
