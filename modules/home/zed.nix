@@ -66,6 +66,7 @@ in
       "scss"
       "sql"
       "svelte"
+      "terraform"
       "toml"
     ];
 

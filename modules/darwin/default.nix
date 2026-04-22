@@ -68,6 +68,20 @@
     home = "/Users/${username}";
   };
 
+  launchd.daemons.limit-maxfiles.serviceConfig = {
+    Label = "limit.maxfiles";
+    ProgramArguments = [ "launchctl" "limit" "maxfiles" "524288" "524288" ];
+    RunAtLoad = true;
+    ServiceIPC = false;
+  };
+
+  launchd.daemons.limit-maxproc.serviceConfig = {
+    Label = "limit.maxproc";
+    ProgramArguments = [ "launchctl" "limit" "maxproc" "4096" "8192" ];
+    RunAtLoad = true;
+    ServiceIPC = false;
+  };
+
   system.activationScripts.extraActivation = {
     text = ''
       if [[ $(uname -m) == "arm64" ]] && ! pgrep oahd >/dev/null 2>&1; then
