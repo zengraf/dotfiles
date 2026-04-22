@@ -11,7 +11,10 @@
     enable = true;
     nix-direnv.enable = true;
     stdlib = ''
-      eval "$(${pkgs.devenv}/bin/devenv direnvrc)"
+      use_devenv() {
+        eval "$(${pkgs.devenv}/bin/devenv direnvrc)"
+        use_devenv "$@"
+      }
     '';
   };
 
