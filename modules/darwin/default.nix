@@ -88,6 +88,13 @@
         echo "installing Rosetta 2..."
         /usr/sbin/softwareupdate --install-rosetta --agree-to-license
       fi
+
+      if ! /usr/bin/security find-certificate -c "Zengraf LAN CA" /Library/Keychains/System.keychain >/dev/null 2>&1; then
+        echo "installing Zengraf LAN CA into System keychain..."
+        /usr/bin/security add-trusted-cert -d -r trustRoot \
+          -k /Library/Keychains/System.keychain \
+          ${../../pki/ca.crt}
+      fi
     '';
   };
 
