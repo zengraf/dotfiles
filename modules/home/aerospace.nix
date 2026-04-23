@@ -52,12 +52,22 @@
 
       on-window-detected = [
         {
+          "if".app-id = "com.1password.1password";
+          run = "layout floating";
+        }
+        {
           "if".app-id = "dev.zed.Zed";
-          run = "move-node-to-workspace C";
+          run = [
+            "move-node-to-workspace C"
+            "layout accordion horizontal"
+          ];
         }
         {
           "if".app-id = "com.mitchellh.ghostty";
-          run = "move-node-to-workspace T";
+          run = [
+            "move-node-to-workspace T"
+            "layout accordion vertical"
+          ];
         }
         {
           "if".app-id = "company.thebrowser.Browser";
@@ -128,9 +138,9 @@
         ctrl-6 = "workspace N";
         ctrl-7 = "workspace V";
 
-        ctrl-shift-1 = "move-node-to-workspace C";
-        ctrl-shift-2 = "move-node-to-workspace T";
-        ctrl-shift-3 = "move-node-to-workspace W";
+        ctrl-shift-1 = "move-node-to-workspace W";
+        ctrl-shift-2 = "move-node-to-workspace C";
+        ctrl-shift-3 = "move-node-to-workspace T";
         ctrl-shift-4 = "move-node-to-workspace D";
         ctrl-shift-5 = "move-node-to-workspace M";
         ctrl-shift-6 = "move-node-to-workspace N";
