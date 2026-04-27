@@ -1,11 +1,13 @@
-{ pkgs, ... }:
+{ pkgs, agenix, ... }:
 {
-  home.packages = with pkgs; [
+  home.packages = [
+    agenix
+  ] ++ (with pkgs; [
     claude-code
     delta
     devenv
     tig
-  ];
+  ]);
 
   programs.direnv = {
     enable = true;

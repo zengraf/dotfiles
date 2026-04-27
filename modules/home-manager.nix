@@ -4,6 +4,7 @@
   inputs,
   username,
   hostname,
+  agenix,
   ...
 }:
 {
@@ -13,7 +14,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "bak";
-    extraSpecialArgs = { inherit inputs username hostname; };
+    extraSpecialArgs = { inherit inputs username hostname agenix; };
     sharedModules = [ inputs.nix-index-database.homeModules.default ];
   };
 }

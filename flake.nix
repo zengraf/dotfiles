@@ -41,6 +41,7 @@
     }@inputs:
     let
       helpers = import ./helpers.nix;
+      agenixFor = system: inputs.agenix.packages.${system}.default;
       mkDarwinSystem =
         {
           hostname,
@@ -60,6 +61,7 @@
               uid
               helpers
               ;
+            agenix = agenixFor system;
           };
           modules = [
             ./modules/common.nix
@@ -88,6 +90,7 @@
               username
               helpers
               ;
+            agenix = agenixFor system;
           };
           modules = [
             ./modules/common.nix
