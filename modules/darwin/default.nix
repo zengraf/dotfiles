@@ -55,7 +55,10 @@
     onActivation.upgrade = true;
   };
 
-  environment.systemPackages = with pkgs; [ mas ];
+  environment.systemPackages = [
+    pkgs.mas
+    inputs.nix-darwin.packages.${system}.default
+  ];
 
   security.pam.services.sudo_local = {
     enable = true;

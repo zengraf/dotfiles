@@ -1,4 +1,10 @@
-{ lib, pkgs, username, ... }: {
+{
+  lib,
+  pkgs,
+  username,
+  ...
+}:
+{
   home.username = username;
   home.homeDirectory = "/Users/${username}";
 
@@ -8,6 +14,10 @@
   ];
 
   programs.nushell.shellAliases.agenix = "agenix -i ~/.config/age/se.txt";
+
+  programs.nushell.extraEnv = ''
+    ulimit -Sn 524288
+  '';
 
   home.activation.generateAgeSeKey = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ ! -e "$HOME/.config/age/se.txt" ]; then

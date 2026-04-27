@@ -12,5 +12,5 @@
 
   security.pki.certificateFiles = [ ../pki/ca.crt ];
 
-  environment.systemPackages = with pkgs; [ vim wget ];
+  environment.systemPackages = with pkgs; [ vim wget nixos-rebuild ];
 }
