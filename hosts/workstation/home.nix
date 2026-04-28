@@ -14,6 +14,7 @@
   home.packages = with pkgs; [
     bun
     google-cloud-sdk
+    graphify
     ngrok
     nodejs_22
     ruby
