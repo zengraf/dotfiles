@@ -9,11 +9,6 @@
   ...
 }:
 {
-  nix.enable = false;
-
-  nix.linux-builder.enable = true;
-  launchd.daemons.linux-builder.serviceConfig.RunAtLoad = lib.mkForce false;
-
   nixpkgs.hostPlatform = system;
 
   system.primaryUser = username;
@@ -74,6 +69,9 @@
     inherit uid;
     home = "/Users/${username}";
   };
+
+  nix.linux-builder.enable = true;
+  launchd.daemons.linux-builder.serviceConfig.RunAtLoad = lib.mkForce false;
 
   launchd.daemons.limit-maxfiles.serviceConfig = {
     Label = "limit.maxfiles";

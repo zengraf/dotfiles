@@ -1,5 +1,5 @@
 { pkgs, hostname, ... }: {
-  nix.package = pkgs.lix;
+  nix.package = pkgs.lixPackageSets.stable.lix;
   nix.settings = {
     experimental-features = "nix-command flakes";
     substituters = [ "https://zengraf.cachix.org" ];
@@ -7,10 +7,11 @@
   };
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.overlays = [ (import ../overlays/lix-packages.nix) ];
 
   networking.hostName = hostname;
 
   security.pki.certificateFiles = [ ../pki/ca.crt ];
 
-  environment.systemPackages = with pkgs; [ vim wget nixos-rebuild ];
+  environment.systemPackages = with pkgs; [ cachix nixos-rebuild vim wget ];
 }
