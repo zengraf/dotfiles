@@ -14,6 +14,8 @@
   ];
 
   programs.nushell.shellAliases.agenix = "agenix -i ~/.config/age/se.txt";
+  programs.nushell.shellAliases.linux-builder-start = "sudo launchctl start org.nixos.linux-builder";
+  programs.nushell.shellAliases.linux-builder-stop = "sudo launchctl stop org.nixos.linux-builder";
 
   programs.nushell.extraEnv = ''
     ulimit -Sn 524288

@@ -1,5 +1,6 @@
 {
   self,
+  lib,
   system,
   pkgs,
   inputs,
@@ -9,6 +10,9 @@
 }:
 {
   nix.enable = false;
+
+  nix.linux-builder.enable = true;
+  launchd.daemons.linux-builder.serviceConfig.RunAtLoad = lib.mkForce false;
 
   nixpkgs.hostPlatform = system;
 
