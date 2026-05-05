@@ -69,7 +69,15 @@
     home = "/Users/${username}";
   };
 
-  nix.linux-builder.enable = true;
+  nix.linux-builder = {
+    enable = true;
+    virtualisation = {
+      darwin-builder = {
+        diskSize = 50 * 1024;
+      };
+    };
+  };
+
   launchd.daemons.linux-builder.serviceConfig.RunAtLoad = lib.mkForce false;
 
   launchd.daemons.limit-maxfiles.serviceConfig = {
