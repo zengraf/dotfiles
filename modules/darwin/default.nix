@@ -71,9 +71,11 @@
 
   nix.linux-builder = {
     enable = true;
-    virtualisation = {
-      darwin-builder = {
-        diskSize = 50 * 1024;
+    config = {
+      virtualisation = {
+        darwin-builder = {
+          diskSize = 50 * 1024;
+        };
       };
     };
   };
