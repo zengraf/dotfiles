@@ -23,6 +23,7 @@
 
   environment.systemPackages = with pkgs; [
     cachix
+    coreutils
     nixos-rebuild
     vim
     wget
