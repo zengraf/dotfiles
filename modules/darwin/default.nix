@@ -73,6 +73,7 @@
     enable = true;
     config = {
       virtualisation = {
+        cores = 4;
         darwin-builder = {
           diskSize = 50 * 1024;
         };
