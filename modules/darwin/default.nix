@@ -71,9 +71,11 @@
 
   nix.linux-builder = {
     enable = true;
+    ephemeral = true;
+    maxJobs = 1;
     config = {
       virtualisation = {
-        cores = 4;
+        cores = 8;
         darwin-builder = {
           diskSize = 50 * 1024;
         };

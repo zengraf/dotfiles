@@ -11,6 +11,7 @@
       "calibre"
       "discord"
       "inkscape"
+      "kicad"
       "prusaslicer"
       "qbittorrent"
     ];
