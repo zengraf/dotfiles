@@ -6,6 +6,7 @@
     claude-code
     delta
     devenv
+    gh
     tig
   ]);
 
