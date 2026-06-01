@@ -76,6 +76,9 @@ in
       agent_servers = {
         claude-acp = {
           type = "registry";
+          env = {
+            CLAUDE_CODE_EXECUTABLE = pkgs.claude-code;
+          };
           default_config_options = {
             model = "opus";
           };
