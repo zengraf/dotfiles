@@ -77,7 +77,7 @@ in
         claude-acp = {
           type = "registry";
           env = {
-            CLAUDE_CODE_EXECUTABLE = pkgs.claude-code;
+            CLAUDE_CODE_EXECUTABLE = "${pkgs.claude-code}/bin/claude";
           };
           default_config_options = {
             model = "opus";
