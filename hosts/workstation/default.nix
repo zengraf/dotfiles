@@ -1,5 +1,6 @@
 {
   username,
+  pkgs,
   ...
 }:
 {
@@ -11,6 +12,7 @@
     brews = [ "sentry-cli" ];
     casks = [
       "drata-agent"
+      "intellij-idea-ce"
       "notion"
       "slack"
       "zoom"
@@ -33,6 +35,14 @@
   ];
 
   home-manager.users.${username} = ./home.nix;
+
+  # Expose the nix-store Temurin JDK as a standard macOS JDK bundle so IntelliJ
+  # (and /usr/libexec/java_home) auto-detect it without a manual SDK setup.
+  system.activationScripts.extraActivation.text = ''
+    mkdir -p /Library/Java/JavaVirtualMachines
+    ln -sfn ${pkgs.temurin-bin-21}/Library/Java/JavaVirtualMachines/temurin-21.jdk \
+      /Library/Java/JavaVirtualMachines/temurin-21-nix.jdk
+  '';
 
   system.stateVersion = 6;
 }

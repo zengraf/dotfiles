@@ -75,7 +75,8 @@ in
 
       agent_servers = {
         claude-acp = {
-          type = "registry";
+          command = "${pkgs.claude-agent-acp}/bin/claude-agent-acp";
+          args = [ ];
           env = {
             CLAUDE_CODE_EXECUTABLE = "${pkgs.claude-code}/bin/claude";
           };
