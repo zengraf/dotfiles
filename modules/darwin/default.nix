@@ -32,6 +32,7 @@
       "1password"
       "adobe-acrobat-reader"
       "arc"
+      "claude"
       "ghostty"
       "google-drive"
       "iina"
