@@ -7,6 +7,7 @@
     delta
     devenv
     gh
+    secretspec
     tig
   ]);
 
