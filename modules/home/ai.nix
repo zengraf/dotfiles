@@ -1,0 +1,40 @@
+{ pkgs, ... }:
+let
+  sessionStartContexts = pkgs.writeTextFile {
+    name = "claude-session-start-contexts";
+    executable = true;
+    text = ''
+      #!${pkgs.nushell}/bin/nu --no-config-file
+      ${builtins.readFile ../../ai/hooks/session-start-contexts.nu}
+    '';
+  };
+in
+{
+  home.packages = [ pkgs.claude-code ];
+
+  home.file = {
+    ".claude/CLAUDE.md".source = ../../ai/CLAUDE.md;
+    ".claude/skills/deep-review".source = ../../ai/skills/deep-review;
+    ".claude/skills/implement".source = ../../ai/skills/implement;
+    ".claude/skills/ctx".source = ../../ai/skills/ctx;
+
+    ".claude/settings.json".text = builtins.toJSON {
+      permissions.allow = [
+        "Read(~/.claude/contexts/**)"
+        "Edit(~/.claude/contexts/**)"
+        "Write(~/.claude/contexts/**)"
+      ];
+      hooks.SessionStart = [
+        {
+          matcher = "startup|resume|clear";
+          hooks = [
+            {
+              type = "command";
+              command = "${sessionStartContexts}";
+            }
+          ];
+        }
+      ];
+    };
+  };
+}

@@ -3,7 +3,6 @@
   home.packages = [
     agenix
   ] ++ (with pkgs; [
-    claude-code
     delta
     devenv
     gh
