@@ -31,6 +31,7 @@ in
         "Read(~/.claude/contexts/**)"
         "Edit(~/.claude/contexts/**)"
         "Write(~/.claude/contexts/**)"
+        "Write(~/.claude/contexts/.gates/**)"
       ];
       hooks.SessionStart = [
         {

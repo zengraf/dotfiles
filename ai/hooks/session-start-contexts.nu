@@ -43,9 +43,9 @@ if (not ($stale | is-empty)) {
 
 print r#'
 PROTOCOL — a PreToolUse gate blocks ALL tools until resolved; resolve before any other tool call, even if the first message is a task:
-• First message names a context → Read ~/.claude/contexts/<slug>.md (auto-resolves the gate).
-• Else ask: load one listed above / a NEW name (create from the /ctx schema) / "none".
-• "none" → Write an empty ~/.claude/contexts/.gates/<Session id above> to unblock.
+• First message EXPLICITLY names a context → Read ~/.claude/contexts/<slug>.md (auto-resolves the gate).
+• Otherwise you MUST ask the user and WAIT for their reply — never decide for them. A task in the first message is NOT permission to pick "none"; ask anyway. Options: load one listed above / a NEW name (create from the /ctx schema) / "none".
+• ONLY after the user explicitly says "none" → Write an empty ~/.claude/contexts/.gates/<Session id above> to unblock.
 WHILE working (context active):
 • After each meaningful step/decision/correction, Edit the file: add new state AND fix or delete now-stale lines (prevents context poisoning).
 • Keep it dense and small (<~1KB): telegraphic, single-letter keys G/S/D/✗/F/N/Q (schema in /ctx).
