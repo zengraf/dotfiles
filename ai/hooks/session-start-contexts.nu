@@ -47,6 +47,6 @@ PROTOCOL — a PreToolUse gate blocks ALL tools until resolved; resolve before a
 • Otherwise you MUST ask the user and WAIT for their reply — never decide for them. A task in the first message is NOT permission to pick "none"; ask anyway. Options: load one listed above / a NEW name (create from the /ctx schema) / "none".
 • ONLY after the user explicitly says "none" → Write an empty ~/.claude/contexts/.gates/<Session id above> to unblock.
 WHILE working (context active):
-• After each meaningful step/decision/correction, Edit the file: add new state AND fix or delete now-stale lines (prevents context poisoning).
-• Keep it dense and small (<~1KB): telegraphic, single-letter keys G/S/D/✗/F/N/Q (schema in /ctx).
+• After each meaningful step, Edit the file: add new state AND fix/delete now-stale lines (prevents poisoning). Compress, don't log: N is future-only — fold finished steps into D/!/F and delete.
+• Keep it dense and small (<~1KB): telegraphic, keys G/S/D/!/✗/F/N/Q (schema in /ctx).
 • Reading and writing in ~/.claude/contexts/ is pre-authorized.'#

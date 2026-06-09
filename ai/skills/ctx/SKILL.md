@@ -6,11 +6,11 @@ trigger: /ctx
 
 # /ctx — task contexts
 
-A **task context** is a single dense file holding the durable working memory of a task: goal, current state, decisions, corrections, file map, next steps. It lets a fresh session resume in a few hundred tokens instead of replaying a huge transcript, and it is edited in place so a later agent never inherits stale assumptions.
+A **task context** is a single dense file holding the durable working memory of a task: goal, current state, decisions, gotchas, corrections, file map, next steps. It lets a fresh session resume in a few hundred tokens instead of replaying a huge transcript, and it is rewritten in place so a later agent never inherits stale or superseded notes.
 
 Contexts are **freeform** — one can span multiple tickets or repos. They live globally at `~/.claude/contexts/<slug>.md`. Reading and writing there is pre-authorized (no permission prompts).
 
-A `SessionStart` hook already lists recent contexts and asks which to load at the start of each chat; this skill is the schema reference and gives explicit control.
+A `SessionStart` hook lists recent contexts and asks which to load at the start of each chat; this skill is the schema reference and gives explicit control.
 
 ## Usage
 
@@ -25,44 +25,51 @@ A `SessionStart` hook already lists recent contexts and asks which to load at th
 
 ## Loading
 
-`Read ~/.claude/contexts/<slug>.md` and treat it as ground truth for prior work — do not re-derive what it already records. If something in it contradicts what you now observe, the file is stale: fix it (see Maintenance).
+`Read ~/.claude/contexts/<slug>.md` and treat it as ground truth for prior work — do not re-derive what it already records. If something in it contradicts what you now observe, the file is stale: fix it in place (see Maintenance).
 
 ## Schema
 
-Single-letter section keys, one section per line, terse. Omit empty sections.
+Exactly these keys, in this order, each appearing **once**. Omit a key if empty. **Never invent new sections** — if something doesn't fit a key it belongs in the closest one, or it isn't durable enough to keep.
 
 ```
-# <slug> · <date> · scope: <freeform — tickets / repos / "general">
-G: <goal — one line>
-S: <state — where things stand; clauses joined by ;>
-D: <decisions — each "X not Y (why)">
-✗: <corrections — wrong assumptions a future agent must NOT repeat>
-F: <file map — path=role; path=role>
-N: <next — ordered, terse>
-Q: <open questions>
+# <slug> · <last-updated date> · scope: <freeform — area / tickets / repos>
+G: goal — what "done" looks like + the frame (epic, tickets, hard constraints).   [durable]
+S: state — where things stand RIGHT NOW; the active focus. Rewrite every session.  [volatile]
+D: decisions — durable choices + rationale, as "X not Y (why)".                    [durable]
+!: gotchas — true, surprising landmines + the fix. Things that WILL bite again.    [durable]
+✗: corrections — wrong assumptions / dead ends a future agent must NOT repeat.     [durable]
+F: files — path = role; path = role.                                               [durable]
+N: next — ordered, FUTURE-only steps.                                              [volatile]
+Q: open questions / unknowns.                                                      [volatile]
 ```
+
+**`!` vs `✗`** — the two anti-poisoning keys, kept distinct:
+- `!` = something *true and non-obvious* that will trip you (a footgun + its fix): "Tailwind `svg{display:block}` drops inline icons → wrap in an inline-flex span."
+- `✗` = something *false or abandoned* you'd otherwise assume or retry: "branch X is NOT the design ref — it's a legacy snapshot."
 
 Example:
 
 ```
-# auth-refactor · 2026-06-08 · MAR2-1476 + MAR2-1490, repo: marker-api
-G: migrate session auth → JWT, keep /login API stable
-S: JWT issue/verify done src/auth/jwt.ts; mw swapped; refresh WIP
-D: RS256 not HS256 (multi-service verify); 15m access + 7d refresh
-✗: NOT Redis (removed, stateless now) · /login resp shape unchanged—don't "fix"
-F: src/auth/jwt.ts=core; src/mw/auth.ts=guard; test/auth.spec.ts=cov
-N: 1 refresh rotation 2 revoke-list 3 e2e
+# auth-refactor · 2026-06-08 · scope: marker-api · MAR2-1476/1490
+G: session auth → JWT, /login API unchanged. 1476=core, 1490=refresh.
+S: access+refresh issuing done; rotation in review; revoke-list next.
+D: RS256 not HS256 (multi-service verify); 15m access + 7d refresh.
+!: verify() must resolve Element via ownerDocument realm — bare `instanceof` fails cross-iframe.
+✗: NOT Redis — stateless now; don't reintroduce a session store.
+F: src/auth/jwt.ts=core; src/mw/auth.ts=guard.
+N: 1 revoke-list 2 e2e
 Q: rotate refresh every use or sliding window?
 ```
 
-## Maintenance (the important part)
+## Maintenance (the point of the whole thing)
 
-After each meaningful step, decision, or discovery, **Edit the file** to match reality:
+The file is a **continuously compressed snapshot, not a worklog.** After each meaningful step, edit it so it reads as if the current state had always been the plan:
 
-- **Append** new state/decisions/files to the relevant section.
-- **Correct or delete in place** any line that is now wrong or obsolete — never leave a known-false statement. This is what stops a future agent from being poisoned by stale notes.
-- Use the **✗** section only for *traps*: a wrong assumption that is tempting to re-derive. Don't log every fixed typo — that wastes tokens.
-- Keep the whole file **dense and small** (aim < ~1KB). If a section bloats, compress it: drop stopwords, fold resolved items into one line, delete finished `N` steps.
+- **Rewrite the volatile keys** (`S`, `N`, `Q`) freely. `S` must always name the *current* focus — never leave last session's focus sitting there. `N` is **future-only**: the moment a step is done, delete it and fold its durable outcome into `D`/`!`/`F`. A dated list of finished work is the exact failure mode this format exists to prevent.
+- **Grow the durable keys** (`D`, `!`, `✗`, `F`) sparingly, and **correct or delete in place** the instant something is superseded — never leave both the old and new value (a colour that changed blue→orange: the file says orange, full stop). A known-false line is poison.
+- **Keep the destination, not the journey.** "tried blue, then green, settled on yellow because X" → "yellow (X)". Dead branches aren't knowledge.
+- **Don't record** what the repo already says (test names, line-by-line diffs, anything re-derivable from code), transient status ("check passes"), or narration/praise.
+- **Stay small** — aim < ~1 KB. A bloating key is the signal to compress it, not to spill into a new section.
 
 ## Density rules
 
