@@ -6,7 +6,8 @@ def allow [] { exit 0 }
 # Escape hatch for headless / scheduled / automated runs.
 if (($env.CLAUDE_CTX_SKIP? | default "") != "") { allow }
 
-let input = (try { $in | from json } catch { null })
+let parsed = (try { open --raw /dev/stdin | from json } catch { null })
+let input = (if (($parsed | describe) | str starts-with "record") { $parsed } else { null })
 if $input == null { allow }
 
 let sid = ($input.session_id? | default "")

@@ -1,13 +1,13 @@
 # Claude Code SessionStart hook — surface task contexts + inject the maintenance protocol.
 # stdout is added to the model's context. Schema and details live in the `ctx` skill.
 
-let input = (try { $in | from json } catch { {} })
+let parsed = (try { open --raw /dev/stdin | from json } catch { {} })
+let input = (if (($parsed | describe) | str starts-with "record") { $parsed } else { {} })
 let sid = ($input.session_id? | default "unknown")
 
 let dir = ($env.HOME | path join ".claude" "contexts")
 mkdir $dir
 
-# Prune stale per-session gate markers written by the PreToolUse gate.
 let gatedir = ($dir | path join ".gates")
 mkdir $gatedir
 try {
