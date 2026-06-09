@@ -1,8 +1,21 @@
 # Claude Code SessionStart hook — surface task contexts + inject the maintenance protocol.
 # stdout is added to the model's context. Schema and details live in the `ctx` skill.
 
+let input = (try { $in | from json } catch { {} })
+let sid = ($input.session_id? | default "unknown")
+
 let dir = ($env.HOME | path join ".claude" "contexts")
 mkdir $dir
+
+# Prune stale per-session gate markers written by the PreToolUse gate.
+let gatedir = ($dir | path join ".gates")
+mkdir $gatedir
+try {
+  ls $gatedir
+  | where type == file and $it.modified < ((date now) - 7day)
+  | each {|f| rm --force $f.name }
+  | ignore
+}
 
 let contexts = (
   ls $dir
@@ -16,6 +29,7 @@ let recent = ($contexts | where days <= 7)
 let stale = ($contexts | where days > 7 and days <= 30)
 
 print "== TASK CONTEXTS (dense persistent memory for cheap resume; /ctx for schema) =="
+print $"Session id: ($sid)"
 print "Recent (≤7d):"
 if ($recent | is-empty) {
   print "  (none)"
@@ -28,11 +42,11 @@ if (not ($stale | is-empty)) {
 }
 
 print r#'
-PROTOCOL — before starting the task:
-• If the user's first message names a context, load it (Read ~/.claude/contexts/<slug>.md) without asking.
-• Else ask which to use: an existing one above, a NEW name (create ~/.claude/contexts/<slug>.md from the /ctx schema), or "none" (disable for this session).
-• Do not begin the task until a context is chosen or the user says "none".
+PROTOCOL — a PreToolUse gate blocks ALL tools until resolved; resolve before any other tool call, even if the first message is a task:
+• First message names a context → Read ~/.claude/contexts/<slug>.md (auto-resolves the gate).
+• Else ask: load one listed above / a NEW name (create from the /ctx schema) / "none".
+• "none" → Write an empty ~/.claude/contexts/.gates/<Session id above> to unblock.
 WHILE working (context active):
-• After each meaningful step/decision/correction, Edit the file: add new state AND fix or delete now-stale lines in place (prevents future-agent context poisoning).
-• Keep it dense and small (<~1KB): telegraphic, symbols, single-letter keys G/S/D/✗/F/N/Q (schema in /ctx).
-• Reading and writing in ~/.claude/contexts/ is pre-authorized — no permission prompts.'#
+• After each meaningful step/decision/correction, Edit the file: add new state AND fix or delete now-stale lines (prevents context poisoning).
+• Keep it dense and small (<~1KB): telegraphic, single-letter keys G/S/D/✗/F/N/Q (schema in /ctx).
+• Reading and writing in ~/.claude/contexts/ is pre-authorized.'#

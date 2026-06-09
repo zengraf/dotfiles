@@ -62,6 +62,7 @@ in
       "kotlin"
       "make"
       "nix"
+      "nu"
       "prisma"
       "scss"
       "sql"

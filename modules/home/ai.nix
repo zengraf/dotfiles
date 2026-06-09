@@ -8,6 +8,14 @@ let
       ${builtins.readFile ../../ai/hooks/session-start-contexts.nu}
     '';
   };
+  preToolUseContexts = pkgs.writeTextFile {
+    name = "claude-pre-tool-use-contexts";
+    executable = true;
+    text = ''
+      #!${pkgs.nushell}/bin/nu --no-config-file
+      ${builtins.readFile ../../ai/hooks/pre-tool-use-contexts.nu}
+    '';
+  };
 in
 {
   home.packages = [ pkgs.claude-code ];
@@ -31,6 +39,17 @@ in
             {
               type = "command";
               command = "${sessionStartContexts}";
+            }
+          ];
+        }
+      ];
+      hooks.PreToolUse = [
+        {
+          matcher = ".*";
+          hooks = [
+            {
+              type = "command";
+              command = "${preToolUseContexts}";
             }
           ];
         }
