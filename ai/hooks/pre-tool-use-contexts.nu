@@ -17,7 +17,7 @@ if $input == null { allow }
 let sid = ($input.session_id? | default "")
 if $sid == "" { allow }
 
-let contexts = ($env.HOME | path join ".claude" "contexts")
+let contexts = ($env.HOME | path join ".local" "share" "claude-contexts")
 let gatedir = ($contexts | path join ".gates")
 try { mkdir $gatedir }
 let marker = ($gatedir | path join $sid)
@@ -36,5 +36,5 @@ if (($tool in ["Read" "Edit" "Write"]) and ($file != "") and ($file | str starts
 
 if ($marker | path exists) { allow }
 
-let reason = $'Task-context gate unresolved — resolve before any other tool. Load or create a context in ~/.claude/contexts, or for "none" write an empty file at ~/.claude/contexts/.gates/($sid). See /ctx.'
+let reason = $'Task-context gate unresolved — resolve before any other tool. Load or create a context in ~/.local/share/claude-contexts, or for "none" write an empty file at ~/.local/share/claude-contexts/.gates/($sid). See /ctx.'
 { hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason } } | to json | print

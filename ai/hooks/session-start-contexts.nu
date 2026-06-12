@@ -5,7 +5,7 @@ let parsed = (try { open --raw /dev/stdin | from json } catch { {} })
 let input = (if (($parsed | describe) | str starts-with "record") { $parsed } else { {} })
 let sid = ($input.session_id? | default "unknown")
 
-let dir = ($env.HOME | path join ".claude" "contexts")
+let dir = ($env.HOME | path join ".local" "share" "claude-contexts")
 mkdir $dir
 
 let gatedir = ($dir | path join ".gates")
@@ -43,10 +43,10 @@ if (not ($stale | is-empty)) {
 
 print r#'
 PROTOCOL — a PreToolUse gate blocks ALL tools until resolved; resolve before any other tool call, even if the first message is a task:
-• First message EXPLICITLY names a context → Read ~/.claude/contexts/<slug>.md (auto-resolves the gate).
+• First message EXPLICITLY names a context → Read ~/.local/share/claude-contexts/<slug>.md (auto-resolves the gate).
 • Otherwise you MUST ask the user and WAIT for their reply — never decide for them. A task in the first message is NOT permission to pick "none"; ask anyway. Options: load one listed above / a NEW name (create from the /ctx schema) / "none".
-• ONLY after the user explicitly says "none" → Write an empty ~/.claude/contexts/.gates/<Session id above> to unblock.
+• ONLY after the user explicitly says "none" → Write an empty ~/.local/share/claude-contexts/.gates/<Session id above> to unblock.
 WHILE working (context active):
 • After each meaningful step, Edit the file: add new state AND fix/delete now-stale lines (prevents poisoning). Compress, don't log: N is future-only — fold finished steps into D/!/F and delete.
 • Keep it dense and small (<~1KB): telegraphic, keys G/S/D/!/✗/F/N/Q (schema in /ctx).
-• Reading and writing in ~/.claude/contexts/ is pre-authorized.'#
+• Reading and writing in ~/.local/share/claude-contexts/ is pre-authorized.'#

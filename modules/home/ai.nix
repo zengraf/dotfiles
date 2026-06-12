@@ -28,10 +28,10 @@ in
 
     ".claude/settings.json".text = builtins.toJSON {
       permissions.allow = [
-        "Read(~/.claude/contexts/**)"
-        "Edit(~/.claude/contexts/**)"
-        "Write(~/.claude/contexts/**)"
-        "Write(~/.claude/contexts/.gates/**)"
+        "Read(~/.local/share/claude-contexts/**)"
+        "Edit(~/.local/share/claude-contexts/**)"
+        "Write(~/.local/share/claude-contexts/**)"
+        "Write(~/.local/share/claude-contexts/.gates/**)"
       ];
       hooks.SessionStart = [
         {

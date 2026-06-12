@@ -1,6 +1,6 @@
 ---
 name: ctx
-description: "Load, create, or switch the active task context — a dense, persistent working-memory file in ~/.claude/contexts/ that makes resuming long tasks cheap and prevents context poisoning"
+description: "Load, create, or switch the active task context — a dense, persistent working-memory file in ~/.local/share/claude-contexts/ that makes resuming long tasks cheap and prevents context poisoning"
 trigger: /ctx
 ---
 
@@ -8,7 +8,7 @@ trigger: /ctx
 
 A **task context** is a single dense file holding the durable working memory of a task: goal, current state, decisions, gotchas, corrections, file map, next steps. It lets a fresh session resume in a few hundred tokens instead of replaying a huge transcript, and it is rewritten in place so a later agent never inherits stale or superseded notes.
 
-Contexts are **freeform** — one can span multiple tickets or repos. They live globally at `~/.claude/contexts/<slug>.md`. Reading and writing there is pre-authorized (no permission prompts).
+Contexts are **freeform** — one can span multiple tickets or repos. They live globally at `~/.local/share/claude-contexts/<slug>.md`. Reading and writing there is pre-authorized (no permission prompts).
 
 A `SessionStart` hook lists recent contexts and asks which to load at the start of each chat; this skill is the schema reference and gives explicit control.
 
@@ -17,7 +17,7 @@ A `SessionStart` hook lists recent contexts and asks which to load at the start 
 ```
 /ctx                 # list contexts (recent + stale)
 /ctx <slug>          # load <slug>, make it the active context
-/ctx new <slug>      # create ~/.claude/contexts/<slug>.md from the skeleton, make it active
+/ctx new <slug>      # create ~/.local/share/claude-contexts/<slug>.md from the skeleton, make it active
 /ctx none            # disable the protocol for this session
 ```
 
@@ -25,7 +25,7 @@ A `SessionStart` hook lists recent contexts and asks which to load at the start 
 
 ## Loading
 
-`Read ~/.claude/contexts/<slug>.md` and treat it as ground truth for prior work — do not re-derive what it already records. If something in it contradicts what you now observe, the file is stale: fix it in place (see Maintenance).
+`Read ~/.local/share/claude-contexts/<slug>.md` and treat it as ground truth for prior work — do not re-derive what it already records. If something in it contradicts what you now observe, the file is stale: fix it in place (see Maintenance).
 
 ## Schema
 
