@@ -10,6 +10,7 @@
       "android-studio"
       "calibre"
       "discord"
+      "iloader"
       "inkscape"
       "kicad"
       "prusaslicer"
