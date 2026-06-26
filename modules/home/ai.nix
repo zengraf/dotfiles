@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 let
   sessionStartContexts = pkgs.writeTextFile {
     name = "claude-session-start-contexts";
@@ -25,6 +25,7 @@ in
     ".claude/skills/deep-review".source = ../../ai/skills/deep-review;
     ".claude/skills/implement".source = ../../ai/skills/implement;
     ".claude/skills/ctx".source = ../../ai/skills/ctx;
+    ".claude/skills/humanizer/SKILL.md".source = "${inputs.humanizer}/SKILL.md";
 
     ".claude/settings.json".text = builtins.toJSON {
       permissions.allow = [

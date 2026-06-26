@@ -63,10 +63,11 @@ Output comments as a numbered list. Each comment must follow these rules:
 - Friendly tone
 - Intended for a senior engineer with experience in this application
 - Include the location as a clickable file link followed by a visual line reference: `[filename.ts](file:///absolute/path/to/filename.ts#L20) (20-35)`. The link uses `file:///` with `#L{start-line}` for navigation; the parenthesised range after it shows the reader which lines are quoted.
-- Use the `—` sign for dash, `-` for hyphen. Try not to use dashes.
 - Group into **Critical** (blocking issues: bugs, logic errors, missing edge cases, security) and **Nitpicks** (style, naming, minor improvements — 2–3 max)
 
 #### Comment tone
+
+These examples are my voice. They also serve as the voice-calibration sample fed to the humanizer in the next step, so keep them concrete and in sync with how I actually write.
 
 Write like a senior colleague suggesting alternatives, not issuing commands:
 
@@ -76,6 +77,15 @@ Write like a senior colleague suggesting alternatives, not issuing commands:
 - **Terse is fine** — "You can do this in a single pass" is a complete comment.
 - **No praise, no hedging, no filler** — skip "nice work", "I believe", "perhaps consider". Go straight to the point.
 - **Escape hatches welcome** — when a suggestion is expensive, end with "but feel free to ignore if it requires a massive refactor" or similar.
+
+#### Humanize the prose
+
+Your first draft of each comment will read like AI wrote it. Before formatting the output, run the prose through the `humanizer` skill (invoke it via the Skill tool) so it lands in my voice instead of generic clean prose.
+
+- Pass the **Comment tone** examples above as the humanizer's voice-calibration sample. Without a sample it produces neutral output; with one it matches sentence rhythm and word choice.
+- Humanize only the prose — the `>` comment text. Leave code snippets, file links, headings, and the `(20-35)` line references untouched.
+- The humanizer strips em and en dashes, which is why the rules above avoid them.
+- A one-line comment that already reads naturally needs no rewrite. Don't pad it to give the humanizer something to do.
 
 Format each comment like this:
 

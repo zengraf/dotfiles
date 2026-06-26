@@ -98,6 +98,22 @@
         "type": "github"
       }
     },
+    "humanizer": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780874875,
+        "narHash": "sha256-ub6w8mgYHnN7IXPJHgPiuH3mi3r6O0DNccCqAzP0Xi8=",
+        "owner": "blader",
+        "repo": "humanizer",
+        "rev": "9600f2b7241cb4eed6ad803abee5ea01d67fe8e4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "blader",
+        "repo": "humanizer",
+        "type": "github"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -194,6 +210,7 @@
         "home-manager": "home-manager",
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",
+        "humanizer": "humanizer",
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
         "nix-index-database": "nix-index-database",
