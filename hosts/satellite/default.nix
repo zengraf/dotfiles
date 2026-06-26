@@ -13,6 +13,7 @@
       "iloader"
       "inkscape"
       "kicad"
+      "orion"
       "prusaslicer"
       "qbittorrent"
     ];
