@@ -24,7 +24,10 @@
   };
 
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.overlays = [ (import ../overlays/lix-packages.nix) ];
+  nixpkgs.overlays = [
+    (import ../overlays/graphify.nix)
+    (import ../overlays/lix-packages.nix)
+  ];
 
   networking.hostName = hostname;
 

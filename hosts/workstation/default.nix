@@ -6,8 +6,6 @@
 {
   imports = [ ../../modules/darwin/aerospace.nix ];
 
-  nixpkgs.overlays = [ (import ../../overlays/graphify.nix) ];
-
   homebrew = {
     brews = [ "sentry-cli" ];
     casks = [
