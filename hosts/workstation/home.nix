@@ -15,7 +15,6 @@
 
   home.packages = with pkgs; [
     google-cloud-sdk
-    graphify
     ruby
     temurin-bin-21 # JDK for the Railsware RPI (Set kata); IntelliJ CE bundles JUnit
   ];

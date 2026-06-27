@@ -18,14 +18,18 @@ let
   };
 in
 {
-  home.packages = [ pkgs.claude-code ];
+  home.packages = [
+    pkgs.claude-code
+    pkgs.graphify
+  ];
 
   home.file = {
     ".claude/CLAUDE.md".source = ../../ai/CLAUDE.md;
     ".claude/skills/deep-review".source = ../../ai/skills/deep-review;
     ".claude/skills/implement".source = ../../ai/skills/implement;
     ".claude/skills/ctx".source = ../../ai/skills/ctx;
-    ".claude/skills/humanizer/SKILL.md".source = "${inputs.humanizer}/SKILL.md";
+    ".claude/skills/humanizer".source = inputs.humanizer;
+    ".claude/skills/graphify".source = "${pkgs.graphify-skill}/skills/graphify";
 
     ".claude/settings.json".text = builtins.toJSON {
       permissions.allow = [
