@@ -83,7 +83,10 @@
     };
   };
 
-  launchd.daemons.linux-builder.serviceConfig.RunAtLoad = lib.mkForce false;
+  launchd.daemons.linux-builder.serviceConfig = {
+    RunAtLoad = lib.mkForce false;
+    KeepAlive = lib.mkForce false;
+  };
 
   launchd.daemons.limit-maxfiles.serviceConfig = {
     Label = "limit.maxfiles";
