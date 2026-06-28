@@ -1,0 +1,19 @@
+QEMU 11.0.0 aborts in hvf_arch_init_vcpu on macOS 15.2+ (incl. Tahoe):
+a g_assert checks that Apple's HV_SYS_REG_SMCR_EL1 enum equals QEMU's
+KVMID-derived encoding, which does not hold for the SME registers in the
+current Apple SDK. SME2/HVF support is still in-flight upstream. The
+linux-builder guest is plain Linux and never touches SME, so drop the
+sanity assert to let the VM boot.
+
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -1259,8 +1259,7 @@
+             sregs_match_len += ARRAY_SIZE(hvf_sreg_list_sme2) + 1;
+         }
+
+-#define DEF_SYSREG_15_02(HVF_ID, ...) \
+-        g_assert(HVF_ID == KVMID_TO_HVF(KVMID_AA64_SYS_REG64(__VA_ARGS__)));
++#define DEF_SYSREG_15_02(HVF_ID, ...)
+ #define DEF_SYSREG(...)
+
+ #include "sysreg.c.inc"

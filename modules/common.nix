@@ -27,6 +27,7 @@
   nixpkgs.overlays = [
     (import ../overlays/graphify.nix)
     (import ../overlays/lix-packages.nix)
+    (import ../overlays/qemu-hvf-sme.nix)
   ];
 
   networking.hostName = hostname;
