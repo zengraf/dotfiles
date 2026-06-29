@@ -1,6 +1,5 @@
 {
   self,
-  lib,
   system,
   pkgs,
   inputs,
@@ -69,23 +68,11 @@
     home = "/Users/${username}";
   };
 
-  nix.linux-builder = {
+  services.virby = {
     enable = true;
-    ephemeral = true;
-    maxJobs = 1;
-    config = {
-      virtualisation = {
-        cores = 8;
-        darwin-builder = {
-          diskSize = 50 * 1024;
-        };
-      };
-    };
-  };
-
-  launchd.daemons.linux-builder.serviceConfig = {
-    RunAtLoad = lib.mkForce false;
-    KeepAlive = lib.mkForce false;
+    onDemand.enable = true;
+    rosetta = true;
+    cores = 8;
   };
 
   launchd.daemons.limit-maxfiles.serviceConfig = {

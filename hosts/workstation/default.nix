@@ -32,6 +32,8 @@
     "/Applications/Ghostty.app"
   ];
 
+  services.virby.memory = 8192;
+
   home-manager.users.${username} = ./home.nix;
 
   # Expose the nix-store Temurin JDK as a standard macOS JDK bundle so IntelliJ

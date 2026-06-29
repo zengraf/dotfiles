@@ -34,6 +34,8 @@
     "/Applications/Ghostty.app"
   ];
 
+  services.virby.memory = 4096;
+
   home-manager.users.${username} = ./home.nix;
 
   system.stateVersion = 6;

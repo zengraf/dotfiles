@@ -29,6 +29,8 @@
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
+    virby.url = "github:quinneden/virby-nix-darwin";
+
     agenix.url = "github:dbast/agenix/bump";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
     agenix.inputs.darwin.follows = "nix-darwin";
@@ -75,6 +77,7 @@
             ./hosts/${hostname}
             home-manager.darwinModules.home-manager
             nix-homebrew.darwinModules.nix-homebrew
+            inputs.virby.darwinModules.default
           ];
         };
 
