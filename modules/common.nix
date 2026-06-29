@@ -30,6 +30,7 @@
   nixpkgs.overlays = [
     (import ../overlays/graphify.nix)
     (import ../overlays/lix-packages.nix)
+    (import ../overlays/openconnect.nix)
   ];
 
   networking.hostName = hostname;
