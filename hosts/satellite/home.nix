@@ -14,6 +14,7 @@
 
   home.packages = with pkgs; [
     openconnect
+    openconnect-sso
   ];
 
   home.stateVersion = "26.05";
