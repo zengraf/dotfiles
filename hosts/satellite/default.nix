@@ -12,8 +12,8 @@
       "discord"
       "iloader"
       "inkscape"
+      "nook"
       "kicad"
-      "orion"
       "prusaslicer"
       "qbittorrent"
     ];
