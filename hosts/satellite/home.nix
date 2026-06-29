@@ -1,4 +1,4 @@
-{ ... }: {
+{ pkgs, ... }: {
   imports = [
     ../../modules/home/default.nix
     ../../modules/home/darwin.nix
@@ -10,6 +10,10 @@
     ../../modules/home/aerospace.nix
     ../../modules/home/zed.nix
     ../../modules/home/ghostty.nix
+  ];
+
+  home.packages = with pkgs; [
+    openconnect
   ];
 
   home.stateVersion = "26.05";
