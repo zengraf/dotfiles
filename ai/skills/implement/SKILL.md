@@ -32,10 +32,10 @@ Load the `linear-server` MCP tool schemas via ToolSearch first.
 
 ```bash
 git fetch origin main
-git checkout -b <gitBranchName> origin/main
+git checkout -b <gitBranchName> --no-track origin/main
 ```
 
-Use the `gitBranchName` returned by Linear in Step 1. The explicit `origin/main` base ensures the branch starts from the latest remote main, not from the worktree's detached HEAD.
+Use the `gitBranchName` returned by Linear in Step 1. The explicit `origin/main` base ensures the branch starts from the latest remote main, not from the worktree's detached HEAD. `--no-track` keeps the branch from adopting `origin/main` as its upstream — it starts with no tracking branch, so the first push sets its own remote.
 
 ### Step 3 — Assess scope
 
