@@ -12,6 +12,7 @@
       "discord"
       "iloader"
       "inkscape"
+      "macfuse"
       "nook"
       "kicad"
       "prusaslicer"
