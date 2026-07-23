@@ -16,6 +16,14 @@ let
       ${builtins.readFile ../../ai/hooks/pre-tool-use-contexts.nu}
     '';
   };
+  preToolUseGitCommit = pkgs.writeTextFile {
+    name = "claude-pre-tool-use-git-commit";
+    executable = true;
+    text = ''
+      #!${pkgs.nushell}/bin/nu --no-config-file
+      ${builtins.readFile ../../ai/hooks/pre-tool-use-git-commit.nu}
+    '';
+  };
 in
 {
   home.packages = [
@@ -57,6 +65,15 @@ in
             {
               type = "command";
               command = "${preToolUseContexts}";
+            }
+          ];
+        }
+        {
+          matcher = "Bash";
+          hooks = [
+            {
+              type = "command";
+              command = "${preToolUseGitCommit}";
             }
           ];
         }

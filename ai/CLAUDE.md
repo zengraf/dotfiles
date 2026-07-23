@@ -19,3 +19,9 @@ Default to no comments. Add one only when the code cannot speak for itself.
 - Be terse and direct. No preamble, no flattery, no summaries of what I can already see.
 - Say what's actually true: if something failed, is unverified, or was skipped, state it plainly.
 - Match the surrounding code's naming, structure, and idiom — don't impose a different style.
+
+# Git
+
+Never run `git commit` when shipping a feature or any code change. Stage the work, show me the diff and a proposed message, and let me commit it myself.
+
+The one exception is a commit that finishes a merge or rebase, and only with git's default message: a bare `git commit`, or `git merge`/`git rebase` with no message flag. Never author or edit the message yourself. A PreToolUse hook enforces this.
