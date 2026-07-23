@@ -25,6 +25,9 @@ let marker = ($gatedir | path join $sid)
 let tool = ($input.tool_name? | default "")
 let file = ($input.tool_input?.file_path? | default "")
 
+# The context picker must run while the gate is still unresolved.
+if ($tool == "AskUserQuestion") { allow }
+
 if ($file != "" and ($file | str starts-with $gatedir)) {
   force-allow "ctx: gate marker"
 }

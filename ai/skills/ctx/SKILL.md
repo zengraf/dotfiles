@@ -10,12 +10,12 @@ A **task context** is a single dense file holding the durable working memory of 
 
 Contexts are **freeform** — one can span multiple tickets or repos. They live globally at `~/.local/share/claude-contexts/<slug>.md`. Reading and writing there is pre-authorized (no permission prompts).
 
-A `SessionStart` hook lists recent contexts and asks which to load at the start of each chat; this skill is the schema reference and gives explicit control.
+A `SessionStart` hook lists recent contexts and, on the first turn of each chat, opens an `AskUserQuestion` picker to choose one; this skill is the schema reference and gives explicit control. The picker takes at most four options, so it shows the three most-recent contexts plus *None* and names any overflow (older recent contexts and all stale ones) in a line just above it. To load an older or brand-new context, type its slug into the built-in *Other* field.
 
 ## Usage
 
 ```
-/ctx                 # list contexts (recent + stale)
+/ctx                 # open the picker (AskUserQuestion): most-recent contexts + None; Other = any other slug
 /ctx <slug>          # load <slug>, make it the active context
 /ctx new <slug>      # create ~/.local/share/claude-contexts/<slug>.md from the skeleton, make it active
 /ctx none            # disable the protocol for this session

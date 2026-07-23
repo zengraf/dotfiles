@@ -4,7 +4,7 @@ When I type one of these triggers, invoke the matching skill via the Skill tool 
 
 - **`/implement`** — fetch a Linear ticket, create a branch, assess scope, produce a plan in native Plan Mode.
 - **`/deep-review`** — review a PR branch with GitHub + Linear context; output critical issues and nitpicks.
-- **`/ctx`** — load, create, or switch the active task context (dense persistent memory; gated at session start).
+- **`/ctx`** — load, create, or switch the active task context (dense persistent memory; first-turn picker each session).
 
 # Code comments
 

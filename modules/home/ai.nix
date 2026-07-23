@@ -42,6 +42,7 @@ in
 
     ".claude/settings.json".text = builtins.toJSON {
       permissions.allow = [
+        "AskUserQuestion"
         "Read(~/.local/share/claude-contexts/**)"
         "Edit(~/.local/share/claude-contexts/**)"
         "Write(~/.local/share/claude-contexts/**)"
