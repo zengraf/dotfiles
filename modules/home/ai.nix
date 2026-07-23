@@ -30,6 +30,7 @@ in
     ".claude/skills/ctx".source = ../../ai/skills/ctx;
     ".claude/skills/humanizer".source = inputs.humanizer;
     ".claude/skills/graphify".source = "${pkgs.graphify-skill}/skills/graphify";
+    ".claude/skills/grilling".source = "${inputs.mattpocock-skills}/skills/productivity/grilling";
 
     ".claude/settings.json".text = builtins.toJSON {
       permissions.allow = [
