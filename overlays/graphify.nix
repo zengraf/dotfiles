@@ -2,38 +2,18 @@ final: prev:
 let
   py = final.python3Packages;
 
-  tree-sitter-groovy = py.tree-sitter-grammars.tree-sitter-groovy.overridePythonAttrs (
-    old: {
-      pythonRemoveDeps = old.pythonRemoveDeps or [ ];
-      installCheckPhase =
-        let importsPhase = old.pythonImportsCheckPhase or "";
-        in if importsPhase != "" then
-          ''
-            runHook preInstallCheck
-            ${importsPhase}
-            runHook postInstallCheck
-          ''
-        else
-          null;
-    }
-  );
+  # nixpkgs' mk-python-derivation.nix conditionally adds pythonMetadataCheckHook
+  # for pyproject packages whose version does NOT contain "unstable-".
+  # The tree-sitter grammars have versions like "0+unstable20260411" or "1.0.3"
+  # which don't trigger the exclusion, but their upstream PyPI dist-info doesn't
+  # match nixpkgs naming (python-tree-sitter-* vs tree_sitter_*).
+  # Append "-unstable-" to the version string to trigger the built-in skip.
+  skipMetaCheck = pkg: pkg.overridePythonAttrs (old: {
+    pythonRemoveDeps = old.pythonRemoveDeps or [ ];
+    version = old.version + "-unstable-";
+  });
 
-  tree-sitter-objc = py.buildPythonPackage rec {
-    pname = "tree-sitter-objc";
-    version = "3.0.2";
-    pyproject = true;
-
-    src = py.fetchPypi {
-      pname = "tree_sitter_objc";
-      inherit version;
-      hash = "sha256-rFWu/opPPqbx2iouBTcqTzcQAAGTTjaoHg+WxMYlKAk=";
-    };
-
-    build-system = [ py.setuptools ];
-    dependencies = [ py.tree-sitter ];
-
-    pythonImportsCheck = [ "tree_sitter_objc" ];
-  };
+  ts-grammars = builtins.mapAttrs (_: skipMetaCheck) py.tree-sitter-grammars;
 
   graphify-pkg = py.buildPythonPackage rec {
     pname = "graphifyy";
@@ -56,16 +36,16 @@ let
       py.numpy
       py.rapidfuzz
       py.tree-sitter
-      tree-sitter-objc
     ]
-    ++ (with py.tree-sitter-grammars; [
+    ++ (with ts-grammars; [
+      tree-sitter-objc
       tree-sitter-python
       tree-sitter-javascript
       tree-sitter-typescript
       tree-sitter-go
       tree-sitter-rust
       tree-sitter-java
-      tree-sitter-groovy  # overridden above to fix metadata check
+      tree-sitter-groovy
       tree-sitter-c
       tree-sitter-cpp
       tree-sitter-ruby
