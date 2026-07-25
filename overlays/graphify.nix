@@ -2,6 +2,22 @@ final: prev:
 let
   py = final.python3Packages;
 
+  tree-sitter-groovy = py.tree-sitter-grammars.tree-sitter-groovy.overridePythonAttrs (
+    old: {
+      pythonRemoveDeps = old.pythonRemoveDeps or [ ];
+      installCheckPhase =
+        let importsPhase = old.pythonImportsCheckPhase or "";
+        in if importsPhase != "" then
+          ''
+            runHook preInstallCheck
+            ${importsPhase}
+            runHook postInstallCheck
+          ''
+        else
+          null;
+    }
+  );
+
   tree-sitter-objc = py.buildPythonPackage rec {
     pname = "tree-sitter-objc";
     version = "3.0.2";
@@ -49,7 +65,7 @@ let
       tree-sitter-go
       tree-sitter-rust
       tree-sitter-java
-      tree-sitter-groovy
+      tree-sitter-groovy  # overridden above to fix metadata check
       tree-sitter-c
       tree-sitter-cpp
       tree-sitter-ruby
