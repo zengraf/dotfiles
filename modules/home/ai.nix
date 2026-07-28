@@ -48,6 +48,10 @@ in
         "Write(~/.local/share/claude-contexts/**)"
         "Write(~/.local/share/claude-contexts/.gates/**)"
       ];
+      mcpServers.linear = {
+        type = "sse";
+        url = "https://mcp.linear.app/sse";
+      };
       hooks.SessionStart = [
         {
           matcher = "startup|resume|clear";
