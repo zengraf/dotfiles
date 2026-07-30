@@ -43,6 +43,9 @@
     masApps = {
       "1Password for Safari" = 1569813296;
       "DaisyDisk" = 411643860;
+      "Keynote" = 361285480;
+      "Numbers" = 361304891;
+      "Pages" = 361309726;
       "Pixelmator Pro" = 1289583905;
       "Telegram" = 747648890;
       "Things 3" = 904280696;
