@@ -34,7 +34,6 @@ in
         ];
         # /model advertises no Opus 5 row for this account
         env.ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-5[1m]";
-        model = "opus";
         mcpServers.linear = {
           type = "sse";
           url = "https://mcp.linear.app/sse";
