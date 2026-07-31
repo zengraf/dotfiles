@@ -6,6 +6,15 @@ When I type one of these triggers, invoke the matching skill via the Skill tool 
 - **`/deep-review`** — review a PR branch with GitHub + Linear context; output critical issues and nitpicks.
 - **`/ctx`** — load, create, or switch the active task context (dense persistent memory; first-turn picker each session).
 
+# Code navigation
+
+Prefer the LSP tool over grep for symbol questions. It's a deferred tool — load it first with `ToolSearch("select:LSP")`.
+
+- `hover` for a resolved type or signature. `goToDefinition` / `findReferences` for the symbol graph. `documentSymbol` to outline a file. `incomingCalls` / `outgoingCalls` for call hierarchy.
+- Servers are configured for ts, py, rs, nix, and nu. The first call after a cold start can fail with `server is starting` — retry once, don't give up and fall back to grep.
+- `line` and `character` are both 1-based. An off-by-one lands on whitespace and reports "no definition found".
+- Still grep for what LSP excludes by design: comments, string keys (`vi.mock`), and generated artifacts. A rename needs both.
+
 # Code comments
 
 Default to no comments. Add one only when the code cannot speak for itself.
