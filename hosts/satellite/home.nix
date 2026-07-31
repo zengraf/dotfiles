@@ -3,7 +3,7 @@
     ../../modules/home/default.nix
     ../../modules/home/darwin.nix
     ../../modules/home/development.nix
-    ../../modules/home/ai.nix
+    ../../modules/home/ai
     ../../modules/home/git.nix
     ../../modules/home/gpg.nix
     ../../modules/home/nushell.nix
