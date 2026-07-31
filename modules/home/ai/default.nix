@@ -26,13 +26,15 @@ in
     ".claude/settings.json".text = builtins.toJSON (
       lsp.settings
       // {
-        # Edit rules cover every file-editing tool; a Write rule is never matched
         permissions.allow = [
           "AskUserQuestion"
           "Read(~/.local/share/claude-contexts/**)"
           "Edit(~/.local/share/claude-contexts/**)"
           "Edit(~/.local/share/claude-contexts/.gates/**)"
         ];
+        # /model advertises no Opus 5 row for this account
+        env.ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-5[1m]";
+        model = "opus";
         mcpServers.linear = {
           type = "sse";
           url = "https://mcp.linear.app/sse";
