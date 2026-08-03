@@ -3,6 +3,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/nixos/tailscale.nix
+    ../../modules/nixos/nomad-reaper.nix
     ./router.nix
     ./kea.nix
     ./unbound.nix

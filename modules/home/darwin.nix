@@ -1,4 +1,5 @@
 {
+  inputs,
   lib,
   pkgs,
   username,
@@ -8,10 +9,13 @@
   home.username = username;
   home.homeDirectory = "/Users/${username}";
 
-  home.packages = with pkgs; [
+  home.packages = [
+    inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.nomad
+  ]
+  ++ (with pkgs; [
     _1password-cli
     age-plugin-se
-  ];
+  ]);
 
   programs.nushell.shellAliases = {
     agenix = "agenix -i ~/.config/age/se.txt";

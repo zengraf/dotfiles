@@ -116,6 +116,14 @@
             ./modules/home-manager.nix
           ];
         };
+
+      # Disposable egress node. Deliberately does not go through mkNixosSystem:
+      # it shares nothing with the real machines, and common.nix would put four
+      # unused overlays, nixos-rebuild and our CA into every image we store.
+      nomadSystem = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [ ./hosts/nomad ];
+      };
     in
     {
       darwinConfigurations = {
@@ -127,6 +135,17 @@
         router = mkNixosSystem {
           hostname = "router";
           username = "zengraf";
+        };
+        nomad = nomadSystem;
+      };
+
+      packages = {
+        x86_64-linux.nomad-image = nomadSystem.config.system.build.nomadImage;
+        x86_64-linux.nomad = (import nixpkgs { system = "x86_64-linux"; }).callPackage ./pkgs/nomad {
+          inherit self;
+        };
+        aarch64-darwin.nomad = (import nixpkgs { system = "aarch64-darwin"; }).callPackage ./pkgs/nomad {
+          inherit self;
         };
       };
     };

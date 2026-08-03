@@ -1,0 +1,18 @@
+// Tailnet policy required by nomad. Configured by hand in the Tailscale admin
+// console — nothing pushes this file. It exists so the tailnet is reconstructable
+// without archaeology.
+//
+// autoApprovers only take effect at a node's FIRST advertisement. Editing the
+// policy later does not retroactively approve nodes that already joined, so this
+// must be in place before the first nomad node ever exists.
+{
+  "tagOwners": {
+    "tag:nomad": ["autogroup:admin"],
+  },
+
+  // Lets a node authenticating with a tag:nomad key advertise itself as an exit
+  // node with no console click, which is what makes `up` a single command.
+  "autoApprovers": {
+    "exitNode": ["tag:nomad"],
+  },
+}
