@@ -132,12 +132,16 @@ export def "main up" [
     user_data: ({authkey: (mint-authkey $ttl), hostname: $name} | to json)
   })
 
+  print $"($target.backend) instance ($instance.id) at ($instance.ipv4), waiting for it to join"
+
   mut seen = false
-  for _ in 1..60 {
+  for i in 1..60 {
     if (tailscale status --json | from json | get Peer | values | any {|p| $p.HostName == $name }) {
       $seen = true
+      print $"joined after ($i * 2)s"
       break
     }
+    if ($i mod 15) == 0 { print $"  still waiting, ($i * 2)s elapsed" }
     sleep 2sec
   }
   if not $seen {
@@ -179,20 +183,27 @@ export def "main renew" [--ttl: duration = 4hr] {
 }
 
 export def "main image push" [] {
+  print "building image (x86_64-linux, this is the slow part)"
   let out = (nix build $"((flake))#packages.x86_64-linux.nomad-image" --no-link --print-out-paths)
   let id = ($out | path basename | split row "-" | first)
+  let size = (ls ($out | path join "nomad.img") | get size | first)
+  print $"built ($id), ($size)"
+
+  print "uploading to R2 (skipped if unchanged)"
   let url = (r2 publish $out $id (secrets get-json "r2"))
+  print $"published ($url)"
 
   active | each {|b|
     let old = (do ($b.adapter.image-id))
     if $old == $id {
       print $"($b.name): already at ($id)"
     } else {
-      print $"($b.name): publishing ($id)"
+      print $"($b.name): importing ($id), replacing ($old | default 'nothing')"
       do ($b.adapter.ensure-image) $url $id
       if $old != null { do ($b.adapter.destroy-image) $old }
     }
   }
+  print "done"
 }
 
 # An instance with no expiry tag is an orphan from a failed run. It can never
