@@ -51,7 +51,7 @@ export def image-id [] {
 export def ensure-image [url: string, id: string] {
   # Raw only, uncompressed, fetched from a public URL.
   let created = (
-    http post --headers (auth) $"($API)/snapshots/create-from-url" {
+    http post --headers (auth) --content-type application/json $"($API)/snapshots/create-from-url" {
       url: $url
       description: $"nomad-($id)"
     }
@@ -87,7 +87,7 @@ export def create [spec: record] {
   }
 
   let instance = (
-    http post --headers (auth) $"($API)/instances" {
+    http post --headers (auth) --content-type application/json $"($API)/instances" {
       region: $spec.region
       plan: $spec.plan
       snapshot_id: $snap.id
@@ -123,5 +123,5 @@ export def destroy [id: string] {
 }
 
 export def retag [id: string, tags: list<string>] {
-  http patch --headers (auth) $"($API)/instances/($id)" {tags: $tags}
+  http patch --headers (auth) --content-type application/json $"($API)/instances/($id)" {tags: $tags}
 }

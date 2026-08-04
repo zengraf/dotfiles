@@ -46,7 +46,7 @@ export def image-id [] {
 export def ensure-image [url: string, id: string] {
   # DigitalOcean fetches the URL itself and fails if the host will not answer HEAD.
   let created = (
-    http post --headers (auth) $"($API)/images" {
+    http post --headers (auth) --content-type application/json $"($API)/images" {
       name: $"nomad-($id)"
       url: $url
       # Images land in one region and are transferred on demand at create time.
@@ -86,7 +86,7 @@ export def create [spec: record] {
 
   # Images are region-scoped. Transfer is free but not instant.
   if not ($img.regions? | default [] | any {|r| $r == $spec.region }) {
-    http post --headers (auth) $"($API)/images/($img.id)/actions" {
+    http post --headers (auth) --content-type application/json $"($API)/images/($img.id)/actions" {
       type: "transfer"
       region: $spec.region
     }
@@ -102,7 +102,7 @@ export def create [spec: record] {
   }
 
   let droplet = (
-    http post --headers (auth) $"($API)/droplets" {
+    http post --headers (auth) --content-type application/json $"($API)/droplets" {
       name: $spec.hostname
       region: $spec.region
       size: $spec.plan
@@ -150,11 +150,11 @@ export def retag [id: string, tags: list<string>] {
     | where {|t| $t | str starts-with "nomad-exp-" }
   )
   for stale in $current {
-    http delete --headers (auth) --data {resources: $resource} $"($API)/tags/($stale)/resources"
+    http delete --headers (auth) --content-type application/json --data {resources: $resource} $"($API)/tags/($stale)/resources"
   }
 
   for tag in ($tags | where {|t| $t not-in $current }) {
-    try { http post --headers (auth) $"($API)/tags" {name: $tag} }
-    http post --headers (auth) $"($API)/tags/($tag)/resources" {resources: $resource}
+    try { http post --headers (auth) --content-type application/json $"($API)/tags" {name: $tag} }
+    http post --headers (auth) --content-type application/json $"($API)/tags/($tag)/resources" {resources: $resource}
   }
 }

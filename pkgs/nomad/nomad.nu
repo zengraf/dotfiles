@@ -29,7 +29,7 @@ def tailscale-token [] {
 
 def mint-authkey [ttl: duration] {
   let token = (tailscale-token)
-  http post --headers [Authorization $"Bearer ($token)"] https://api.tailscale.com/api/v2/tailnet/-/keys {
+  http post --headers [Authorization $"Bearer ($token)"] --content-type application/json https://api.tailscale.com/api/v2/tailnet/-/keys {
     description: "nomad ephemeral exit node"
     expirySeconds: ((($ttl | into int) / 1_000_000_000) | into int)
     capabilities: {
