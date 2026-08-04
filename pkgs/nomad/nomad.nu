@@ -12,6 +12,27 @@ def flake [] {
   $env.NOMAD_FLAKE? | default $CHECKOUT
 }
 
+# The CLI belongs to the desktop app, which puts it somewhere Nushell does not
+# inherit, so PATH alone is not enough to find it.
+def ts [] {
+  let on_path = (which tailscale | get path? | get 0?)
+  if $on_path != null { return $on_path }
+
+  let found = (
+    [
+      "/opt/homebrew/bin/tailscale"
+      "/usr/local/bin/tailscale"
+      "/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+    ]
+    | where {|p| $p | path exists }
+    | get 0?
+  )
+  if $found == null {
+    error make {msg: "tailscale CLI not found on PATH or in the usual places"}
+  }
+  $found
+}
+
 # eval, not build: this must not realise a 2 GB derivation.
 def image-id [] {
   let p = (nix eval --raw $"((flake))#packages.x86_64-linux.nomad-image.outPath")
@@ -136,7 +157,7 @@ export def "main up" [
 
   mut seen = false
   for i in 1..60 {
-    if (tailscale status --json | from json | get Peer | values | any {|p| $p.HostName == $name }) {
+    if (^(ts) status --json | from json | get Peer | values | any {|p| $p.HostName == $name }) {
       $seen = true
       print $"joined after ($i * 2)s"
       break
@@ -148,14 +169,17 @@ export def "main up" [
     error make {msg: $"($name) never joined the tailnet. Instance ($instance.id) is still running; run `nomad down`"}
   }
 
-  tailscale set $"--exit-node=($name)"
+  ^(ts) set $"--exit-node=($name)"
 
   let geo = (http get https://ipinfo.io/json)
   print $"egress ($geo.ip) in ($geo.city), ($geo.country)"
 }
 
 export def "main down" [] {
-  tailscale set --exit-node=
+  # Clearing the route must never block teardown; a failure here would strand a
+  # billing instance.
+  try { ^(ts) set --exit-node= } catch { print "warning: could not clear exit node" }
+
   let gone = (live | each {|i|
     do ((mod registry | get $i.backend).destroy) $i.id
     $i | select backend id region
