@@ -72,15 +72,13 @@ def mint-authkey [ttl: duration] {
 # Piping `null` does not help: `http delete` rejects nothing as a body too. A
 # `for` block has no pipeline input at all.
 
-# Includes unconfigured backends, so `regions` can show what a credential buys.
+# Regions, plans and prices all come from the provider APIs. Only configured
+# backends appear, because DigitalOcean's catalogue needs authentication.
 def catalogue [] {
   mut rows = []
-  for b in (mod registry | transpose name adapter) {
-    let ready = (do ($b.adapter.configured))
+  for b in (active) {
     let regions = (do ($b.adapter.regions))
-    $rows = ($rows | append ($regions | each {|r|
-      $r | insert backend $b.name | insert configured $ready
-    }))
+    $rows = ($rows | append ($regions | each {|r| $r | insert backend $b.name }))
   }
   $rows
 }
@@ -95,23 +93,17 @@ def active [] {
   $out
 }
 
-def pick [cc: string, backend?: string, region?: string] {
+def pick [cat: list, cc: string, backend?: string, region?: string] {
   let candidates = (
-    catalogue
+    $cat
     | where cc == $cc
-    | where configured
     | where {|r| $backend == null or $r.backend == $backend }
     | where {|r| $region == null or $r.region == $region }
     | sort-by hourly
   )
   if ($candidates | is-empty) {
-    let unconfigured = (catalogue | where cc == $cc | where not configured | get backend | uniq)
-    if ($unconfigured | is-empty) {
-      error make {msg: $"no backend serves country code '($cc)'"}
-    }
-    error make {
-      msg: $"no configured backend serves '($cc)': ($unconfigured | str join ', ') would, but no credential is provisioned"
-    }
+    let served = ($cat | get cc | uniq | sort | str join " ")
+    error make {msg: $"no configured backend serves '($cc)'. Available: ($served)"}
   }
   $candidates | first
 }
@@ -138,7 +130,7 @@ def expiry-of [tags: list<string>] {
 # Nu's default float precision is 2 decimals, which shows every plan as $0.01.
 export def "main regions" [] {
   catalogue
-  | select cc city backend region plan hourly configured
+  | select cc city backend region plan hourly
   | sort-by cc hourly
   | update hourly {|r| $"$($r.hourly | into string --decimals 5)/hr" }
 }
@@ -149,7 +141,7 @@ export def "main up" [
   --backend: string               # override cheapest-first selection
   --region: string                # override cheapest-first selection
 ] {
-  let target = (pick $cc $backend $region)
+  let target = (pick (catalogue) $cc $backend $region)
   let adapter = (mod registry | get $target.backend)
 
   let want = (image-id)

@@ -14,28 +14,41 @@ export def configured [] {
   secrets exists "nomad/vultr"
 }
 
-# Adding a destination is a row here; nothing else in the CLI knows geography.
+const MIN_RAM = 1024
+
+# Vultr's catalogue is unauthenticated and carries ISO country codes, so every
+# region it sells is usable without listing any of them here.
 export def regions [] {
-  [
-    {
-      cc: "in"
-      city: "Bangalore"
-      region: "blr"
-      plan: "vc2-1c-1gb"
-      hourly: 0.007
+  let plans = (http get $"($API)/plans?per_page=500" | get plans)
+
+  http get $"($API)/regions?per_page=500"
+  | get regions
+  | each {|r|
+    let best = (
+      $plans
+      | where {|p| ($r.id in $p.locations) and $p.ram >= $MIN_RAM }
+      | sort-by hourly_cost
+      | get 0?
+    )
+    if $best == null {
+      null
+    } else {
+      {
+        cc: ($r.country | str lowercase)
+        city: $r.city
+        region: $r.id
+        plan: $best.id
+        hourly: $best.hourly_cost
+      }
     }
-    {
-      cc: "in"
-      city: "Delhi"
-      region: "del"
-      plan: "vc2-1c-1gb"
-      hourly: 0.007
-    }
-  ]
+  }
+  | compact
 }
 
-def rate [region: string] {
-  regions | where region == $region | get hourly? | get 0? | default 0.007
+def prices [] {
+  http get $"($API)/plans?per_page=500"
+  | get plans
+  | reduce --fold {} {|p, acc| $acc | insert $p.id $p.hourly_cost }
 }
 
 # The image's store hash lives in the snapshot description.
@@ -138,7 +151,10 @@ export def create [spec: record] {
 }
 
 export def list [] {
-  http get --headers (auth) $"($API)/instances?tag=nomad"
+  let h = (auth)
+  let rates = (prices)
+
+  http get --headers $h $"($API)/instances?tag=nomad"
   | get instances
   | each {|i|
     {
@@ -146,7 +162,7 @@ export def list [] {
       region: $i.region
       tags: ($i.tags? | default [])
       created: ($i.date_created | into datetime)
-      hourly: (rate $i.region)
+      hourly: (if ($i.plan in $rates) { $rates | get $i.plan } else { 0.0 })
     }
   }
 }

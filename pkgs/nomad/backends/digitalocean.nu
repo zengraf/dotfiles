@@ -18,20 +18,57 @@ export def configured [] {
   secrets exists "nomad/digitalocean"
 }
 
-export def regions [] {
-  [
-    {
-      cc: "in"
-      city: "Bangalore"
-      region: "blr1"
-      plan: "s-1vcpu-1gb"
-      hourly: 0.00744
-    }
-  ]
+const MIN_RAM = 1024
+
+# The region object has slug, name, sizes, available and features, but no
+# country: "Bangalore 1" is a display name. This is the one fact DigitalOcean
+# will not tell us, so it is the only geography hardcoded here.
+const COUNTRY = {
+  nyc: "us"
+  sfo: "us"
+  tor: "ca"
+  lon: "gb"
+  ams: "nl"
+  fra: "de"
+  blr: "in"
+  sgp: "sg"
+  syd: "au"
 }
 
-def rate [region: string] {
-  regions | where region == $region | get hourly? | get 0? | default 0.00744
+export def regions [] {
+  let h = (auth)
+  let sizes = (http get --headers $h $"($API)/sizes?per_page=200" | get sizes)
+
+  http get --headers $h $"($API)/regions?per_page=200"
+  | get regions
+  | where available
+  | each {|r|
+    let prefix = ($r.slug | str replace --regex '[0-9]+$' '')
+    let best = (
+      $sizes
+      | where {|s| ($r.slug in $s.regions) and $s.memory >= $MIN_RAM and $s.available }
+      | sort-by price_hourly
+      | get 0?
+    )
+    if $best == null or ($prefix not-in $COUNTRY) {
+      null
+    } else {
+      {
+        cc: ($COUNTRY | get $prefix)
+        city: $r.name
+        region: $r.slug
+        plan: $best.slug
+        hourly: $best.price_hourly
+      }
+    }
+  }
+  | compact
+}
+
+def prices [h: list] {
+  http get --headers $h $"($API)/sizes?per_page=200"
+  | get sizes
+  | reduce --fold {} {|s, acc| $acc | insert $s.slug $s.price_hourly }
 }
 
 def image [h: list] {
@@ -161,7 +198,10 @@ export def create [spec: record] {
 }
 
 export def list [] {
-  http get --headers (auth) $"($API)/droplets?tag_name=nomad"
+  let h = (auth)
+  let rates = (prices $h)
+
+  http get --headers $h $"($API)/droplets?tag_name=nomad"
   | get droplets
   | each {|d|
     {
@@ -169,7 +209,7 @@ export def list [] {
       region: $d.region.slug
       tags: ($d.tags? | default [])
       created: ($d.created_at | into datetime)
-      hourly: (rate $d.region.slug)
+      hourly: (if ($d.size_slug in $rates) { $rates | get $d.size_slug } else { 0.0 })
     }
   }
 }
