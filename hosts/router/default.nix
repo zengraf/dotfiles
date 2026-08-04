@@ -13,7 +13,10 @@
     ./grafana.nix
   ];
 
-  age.identityPaths = [ "/etc/age-key.txt" ];
+  age.identityPaths = [
+    "/etc/age-key.txt"
+    "/etc/ssh/ssh_host_ed25519_key"
+  ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

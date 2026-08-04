@@ -4,16 +4,15 @@ use r2.nu
 
 const TAG = "nomad"
 
-# Store hash of the image the current config would produce. Evaluated, never
-# built — `nix eval` does not realise the derivation.
+# eval, not build: this must not realise a 2 GB derivation.
 def image-id [] {
   let p = (nix eval --raw $"($env.NOMAD_FLAKE)#packages.x86_64-linux.nomad-image.outPath")
   $p | path basename | split row "-" | first
 }
 
 def tailscale-token [] {
-  let oauth = (secrets get-json "tailscale-oauth")
-  # Tailscale's documented example posts only the two credentials, no grant_type.
+  let oauth = (secrets get-json "nomad/tailscale-oauth")
+  # Tailscale's documented example omits grant_type.
   http post --content-type application/x-www-form-urlencoded https://api.tailscale.com/api/v2/oauth/token {
     client_id: $oauth.client_id
     client_secret: $oauth.client_secret
@@ -38,29 +37,43 @@ def mint-authkey [ttl: duration] {
   } | get key
 }
 
-# Every backend's regions, flattened, with the backend name attached.
+# Includes unconfigured backends, so `regions` can show what a credential buys.
 def catalogue [] {
   mod registry | transpose name adapter | each {|b|
-    do ($b.adapter.regions) | each {|r| $r | insert backend $b.name }
+    let ready = (do ($b.adapter.configured))
+    do ($b.adapter.regions) | each {|r| $r | insert backend $b.name | insert configured $ready }
   } | flatten
+}
+
+# Every API call goes through this. A half-provisioned machine must still destroy
+# what it created elsewhere, so an unconfigured backend is skipped, not fatal.
+def active [] {
+  mod registry | transpose name adapter | where {|b| do ($b.adapter.configured) }
 }
 
 def pick [cc: string, backend?: string, region?: string] {
   let candidates = (
     catalogue
     | where cc == $cc
+    | where configured
     | where {|r| $backend == null or $r.backend == $backend }
     | where {|r| $region == null or $r.region == $region }
     | sort-by hourly
   )
   if ($candidates | is-empty) {
-    error make {msg: $"no backend serves country code '($cc)'"}
+    let unconfigured = (catalogue | where cc == $cc | where not configured | get backend | uniq)
+    if ($unconfigured | is-empty) {
+      error make {msg: $"no backend serves country code '($cc)'"}
+    }
+    error make {
+      msg: $"no configured backend serves '($cc)': ($unconfigured | str join ', ') would, but no credential is provisioned"
+    }
   }
   $candidates | first
 }
 
 def live [] {
-  mod registry | transpose name adapter | each {|b|
+  active | each {|b|
     do ($b.adapter.list) | each {|i| $i | insert backend $b.name }
   } | flatten
 }
@@ -75,12 +88,10 @@ def expiry-of [tags: list<string>] {
   }
 }
 
-# Prices are formatted here rather than carried as strings: Nu's default float
-# precision is 2 decimals, which renders every plan as $0.01 and makes
-# cheapest-first look arbitrary.
+# Nu's default float precision is 2 decimals, which shows every plan as $0.01.
 export def "main regions" [] {
   catalogue
-  | select cc city backend region plan hourly
+  | select cc city backend region plan hourly configured
   | sort-by cc hourly
   | update hourly {|r| $"$($r.hourly | into string --decimals 5)/hr" }
 }
@@ -113,7 +124,6 @@ export def "main up" [
     user_data: ({authkey: (mint-authkey $ttl), hostname: $name} | to json)
   })
 
-  # The node joins on its own; wait for it to show up as a peer.
   mut seen = false
   for _ in 1..60 {
     if (tailscale status --json | from json | get Peer | values | any {|p| $p.HostName == $name }) {
@@ -144,7 +154,7 @@ export def "main down" [] {
 export def "main status" [] {
   live | each {|i|
     let up = ((date now) - $i.created)
-    # Vultr bills a 1h minimum; charging a partial hour would understate it.
+    # Vultr bills a 1h minimum, so a partial hour would understate the cost.
     let hours = ([1 ($up / 1hr | math ceil)] | math max)
     $i | insert uptime $up | insert cost ($hours * $i.hourly) | insert expires (expiry-of $i.tags)
   }
@@ -165,7 +175,7 @@ export def "main image push" [] {
   let id = ($out | path basename | split row "-" | first)
   let url = (r2 publish $out $id (secrets get-json "r2"))
 
-  mod registry | transpose name adapter | each {|b|
+  active | each {|b|
     let old = (do ($b.adapter.image-id))
     if $old == $id {
       print $"($b.name): already at ($id)"
@@ -177,9 +187,8 @@ export def "main image push" [] {
   }
 }
 
-# The dead-man switch, run from a timer on the router so that a dead operator
-# machine cannot leave an instance billing. An instance carrying no expiry tag is
-# an orphan from a failed run and can never expire on its own, so it goes too.
+# An instance with no expiry tag is an orphan from a failed run. It can never
+# expire on its own, so it goes too.
 export def "main reap" [] {
   let now = (date now)
   live | each {|i|

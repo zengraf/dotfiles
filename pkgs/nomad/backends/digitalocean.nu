@@ -3,7 +3,7 @@ use ../secrets.nu
 const API = "https://api.digitalocean.com/v2"
 
 def creds [] {
-  secrets get-json "digitalocean"
+  secrets get-json "nomad/digitalocean"
 }
 
 def auth [] {
@@ -11,9 +11,10 @@ def auth [] {
   [Authorization $"Bearer ($token)"]
 }
 
-# Droplets from custom images have password auth disabled and no console reset,
-# so omitting an SSH key yields an unreachable droplet rather than an API error.
-# The key is never used — admin is Tailscale SSH — but it must be present.
+export def configured [] {
+  secrets exists "nomad/digitalocean"
+}
+
 export def regions [] {
   [
     {
@@ -43,8 +44,7 @@ export def image-id [] {
 }
 
 export def ensure-image [url: string, id: string] {
-  # DigitalOcean fetches the URL itself and will fail if the host does not answer
-  # HEAD requests. It accepts the same raw image Vultr requires.
+  # DigitalOcean fetches the URL itself and fails if the host will not answer HEAD.
   let created = (
     http post --headers (auth) $"($API)/images" {
       name: $"nomad-($id)"
@@ -84,8 +84,7 @@ export def create [spec: record] {
     error make {msg: "no nomad image on digitalocean — run `nomad image push`"}
   }
 
-  # An image is scoped to the regions it has been transferred to; transferring is
-  # free but not instant, so a region we have never used needs one first.
+  # Images are region-scoped. Transfer is free but not instant.
   if not ($img.regions? | default [] | any {|r| $r == $spec.region }) {
     http post --headers (auth) $"($API)/images/($img.id)/actions" {
       type: "transfer"
@@ -109,9 +108,11 @@ export def create [spec: record] {
       size: $spec.plan
       image: $img.id
       tags: $spec.tags
-      ssh_keys: [(creds | get ssh_key_id)]
+      # Never used, but a custom-image droplet without one has password auth
+      # disabled and no console reset, so it would be unreachable.
+      ssh_keys: [(creds | get ssh_key)]
       ipv6: false
-      # Plain text here; Vultr wants the same payload base64-encoded.
+      # Plain text here, base64 on Vultr.
       user_data: $spec.user_data
     }
     | get droplet
@@ -138,9 +139,8 @@ export def destroy [id: string] {
   http delete --headers (auth) $"($API)/droplets/($id)"
 }
 
-# DigitalOcean has no "replace this resource's tags" call: a tag is an object you
-# create, then attach resources to. Renewal therefore means detaching the stale
-# expiry tag and attaching a fresh one.
+# There is no "set tags" call: a tag is an object you attach resources to, so
+# renewal means detaching the stale expiry tag and attaching a fresh one.
 export def retag [id: string, tags: list<string>] {
   let resource = [{resource_id: ($id | into string), resource_type: "droplet"}]
 

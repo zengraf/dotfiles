@@ -9,9 +9,13 @@
   home.username = username;
   home.homeDirectory = "/Users/${username}";
 
-  home.packages = [
-    inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.nomad
-  ]
+  home.packages = (
+    with inputs.self.packages.${pkgs.stdenv.hostPlatform.system};
+    [
+      nomad
+      cache-push
+    ]
+  )
   ++ (with pkgs; [
     _1password-cli
     age-plugin-se

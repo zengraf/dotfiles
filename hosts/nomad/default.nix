@@ -32,9 +32,8 @@
     };
 
     kernel.sysctl = {
-      # Forwarded packets arrive on an interface that is not the one the
-      # reply would leave by; strict RPF drops them. The tailscale module
-      # only relaxes this for "client"/"both", not "server".
+      # The tailscale module only relaxes RPF for "client"/"both", so a
+      # server-mode exit node would still drop forwarded packets.
       "net.ipv4.conf.all.rp_filter" = 2;
       "net.ipv4.conf.default.rp_filter" = 2;
 
@@ -77,7 +76,6 @@
     openFirewall = true;
   };
 
-  # Credential injection. The only boot-time work beyond joining the tailnet.
   # user-data is JSON: {"authkey": "tskey-...", "hostname": "nomad-in-a3f9"}
   systemd.services.nomad-join = {
     description = "Join the tailnet as an ephemeral exit node";
@@ -133,7 +131,6 @@
     '';
   };
 
-  # Tailscale's documented tuning for forwarded UDP throughput.
   systemd.services.nomad-nic-offload = {
     description = "Tune NIC offload for forwarded UDP";
     wantedBy = [ "multi-user.target" ];
@@ -153,17 +150,13 @@
     '';
   };
 
-  # Stateless and disposable: nothing to log rotate, nothing to garbage collect,
-  # nothing to read a manual on.
   documentation.enable = false;
   documentation.nixos.enable = false;
   environment.defaultPackages = [ ];
   services.udisks2.enable = false;
   nix.enable = false;
 
-  # There is deliberately no password and no authorized key: the only way in is
-  # Tailscale SSH over the tailnet, and there is nothing on the node worth
-  # recovering if that fails — destroy it and provision another.
+  # No password and no authorized key: ingress is Tailscale SSH only.
   users.mutableUsers = false;
   users.allowNoPasswordLogin = true;
 

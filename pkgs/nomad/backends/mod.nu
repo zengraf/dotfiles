@@ -1,12 +1,11 @@
 use vultr.nu
 use digitalocean.nu
 
-# Nu resolves `use` at parse time — `use $name` is a parse error — so backends
-# are enumerated here rather than discovered. Adding one is a new file plus a
-# row below; nothing else in the CLI knows a provider exists.
+# Nu resolves `use` at parse time, so backends are listed rather than discovered.
 export def registry [] {
   {
     vultr: {
+      configured: {|| vultr configured }
       regions: {|| vultr regions }
       image-id: {|| vultr image-id }
       ensure-image: {|url, id| vultr ensure-image $url $id }
@@ -17,6 +16,7 @@ export def registry [] {
       retag: {|id, tags| vultr retag $id $tags }
     }
     digitalocean: {
+      configured: {|| digitalocean configured }
       regions: {|| digitalocean regions }
       image-id: {|| digitalocean image-id }
       ensure-image: {|url, id| digitalocean ensure-image $url $id }

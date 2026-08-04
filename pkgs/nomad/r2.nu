@@ -1,6 +1,5 @@
-# R2 hosts the image artifact and doubles as the nix binary cache. The bucket is
-# public-read, so a provider's fetch-from-URL needs no credentials — which is why
-# no secret ever reaches the node.
+# Public-read bucket, so a provider's fetch-from-URL needs no credentials and no
+# secret ever reaches the node.
 export def publish [src: path, id: string, creds: record] {
   let key = $"images/nomad-($id).img"
 

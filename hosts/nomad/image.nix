@@ -6,10 +6,9 @@
   ...
 }:
 {
-  # MBR/legacy, because DigitalOcean custom images cannot boot UEFI. Uncompressed
-  # raw, because Vultr accepts raw only. `deterministic` makes the output store
-  # hash a stable identity for the node config — `up` compares it against the
-  # published snapshot and refuses to provision a stale one.
+  # Legacy MBR because DigitalOcean cannot boot UEFI, uncompressed raw because
+  # Vultr accepts nothing else. Deterministic so the output hash identifies the
+  # node config.
   system.build.nomadImage = import (modulesPath + "/../lib/make-disk-image.nix") {
     inherit config lib pkgs;
     name = "nomad-image";

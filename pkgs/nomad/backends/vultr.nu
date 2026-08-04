@@ -3,12 +3,15 @@ use ../secrets.nu
 const API = "https://api.vultr.com/v2"
 
 def auth [] {
-  let token = (secrets get-json "vultr" | get token)
+  let token = (secrets get-json "nomad/vultr" | get token)
   [Authorization $"Bearer ($token)"]
 }
 
-# Country code to region. Adding a destination is a row here; nothing else in the
-# CLI knows geography. `hourly` drives cheapest-first selection.
+export def configured [] {
+  secrets exists "nomad/vultr"
+}
+
+# Adding a destination is a row here; nothing else in the CLI knows geography.
 export def regions [] {
   [
     {
@@ -32,8 +35,7 @@ def rate [region: string] {
   regions | where region == $region | get hourly? | get 0? | default 0.007
 }
 
-# The published image is identified by its store hash, parked in the snapshot
-# description. `up` compares this against what the current config would build.
+# The image's store hash lives in the snapshot description.
 def snapshot [] {
   http get --headers (auth) $"($API)/snapshots"
   | get snapshots
@@ -47,7 +49,7 @@ export def image-id [] {
 }
 
 export def ensure-image [url: string, id: string] {
-  # Vultr takes raw only, uncompressed, fetched from a public URL.
+  # Raw only, uncompressed, fetched from a public URL.
   let created = (
     http post --headers (auth) $"($API)/snapshots/create-from-url" {
       url: $url
@@ -56,7 +58,7 @@ export def ensure-image [url: string, id: string] {
     | get snapshot
   )
 
-  # The import is asynchronous and the snapshot is unbootable until it completes.
+  # Asynchronous; the snapshot is unbootable until it completes.
   for _ in 1..120 {
     let status = (http get --headers (auth) $"($API)/snapshots/($created.id)" | get snapshot.status)
     if $status == "complete" { return $created.id }
@@ -93,7 +95,7 @@ export def create [spec: record] {
       label: $spec.hostname
       tags: $spec.tags
       enable_ipv6: true
-      # Vultr wants base64 here; DigitalOcean wants plain text. Do not share.
+      # Base64 here, plain text on DigitalOcean.
       user_data: ($spec.user_data | encode base64)
     }
     | get instance

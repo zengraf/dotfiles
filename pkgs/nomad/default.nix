@@ -17,9 +17,8 @@ stdenvNoCC.mkDerivation {
   nativeBuildInputs = [ makeWrapper ];
   dontBuild = true;
 
-  # `tailscale` and `nix` are deliberately not in the closure: the Mac's
-  # tailscale CLI belongs to the desktop app and only its socket works, and nix
-  # is lix here. --prefix leaves both resolvable from the caller's PATH.
+  # tailscale and nix stay out of the closure: the Mac's tailscale CLI belongs to
+  # the desktop app, and nix here is lix. --prefix leaves both on the caller's PATH.
   installPhase = ''
     runHook preInstall
 

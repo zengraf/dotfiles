@@ -9,19 +9,23 @@ let
   secretsDir = "/run/nomad-secrets";
 in
 {
-  # The dead-man switch lives here rather than on the node: an exit node is the
-  # least trusted machine in the system, and a provider token on it would trade a
-  # runaway bill for a compromised account.
-  age.secrets = {
-    nomad-vultr = {
-      file = ../../secrets/nomad-vultr.age;
-      path = "${secretsDir}/nomad-vultr";
+  # Not on the node itself: an exit node is public-facing, and a provider token
+  # there would trade a runaway bill for a compromised account.
+  #
+  # Conditional so the repo evaluates while a backend is still unprovisioned.
+  age.secrets =
+    lib.optionalAttrs (builtins.pathExists ../../secrets/nomad/vultr.age) {
+      nomad-vultr = {
+        file = ../../secrets/nomad/vultr.age;
+        path = "${secretsDir}/vultr";
+      };
+    }
+    // lib.optionalAttrs (builtins.pathExists ../../secrets/nomad/digitalocean.age) {
+      nomad-digitalocean = {
+        file = ../../secrets/nomad/digitalocean.age;
+        path = "${secretsDir}/digitalocean";
+      };
     };
-    nomad-digitalocean = {
-      file = ../../secrets/nomad-digitalocean.age;
-      path = "${secretsDir}/nomad-digitalocean";
-    };
-  };
 
   systemd.services.nomad-reaper = {
     description = "Destroy expired ephemeral exit nodes";
