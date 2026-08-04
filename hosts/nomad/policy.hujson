@@ -1,5 +1,5 @@
 // Tailnet policy required by nomad. Configured by hand in the Tailscale admin
-// console — nothing pushes this file. It exists so the tailnet is reconstructable
+// console; nothing pushes it. It exists so the tailnet is reconstructable
 // without archaeology.
 //
 // autoApprovers only take effect at a node's FIRST advertisement. Editing the

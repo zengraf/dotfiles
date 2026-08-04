@@ -4,9 +4,17 @@ use r2.nu
 
 const TAG = "nomad"
 
+# The wrapper bakes in the flake it was built from. Falling back to the checkout
+# keeps the CLI runnable from source.
+const CHECKOUT = (path self | path dirname | path join ".." "..")
+
+def flake [] {
+  $env.NOMAD_FLAKE? | default $CHECKOUT
+}
+
 # eval, not build: this must not realise a 2 GB derivation.
 def image-id [] {
-  let p = (nix eval --raw $"($env.NOMAD_FLAKE)#packages.x86_64-linux.nomad-image.outPath")
+  let p = (nix eval --raw $"((flake))#packages.x86_64-linux.nomad-image.outPath")
   $p | path basename | split row "-" | first
 }
 
@@ -108,13 +116,13 @@ export def "main up" [
   let want = (image-id)
   let published = (do ($adapter.image-id))
   if $published != $want {
-    error make {msg: $"published image is ($published), config wants ($want) — run `nomad image push`"}
+    error make {msg: $"published image is ($published), config wants ($want); run `nomad image push`"}
   }
 
   let name = $"nomad-($cc)-(random chars --length 4 | str lowercase)"
   let expires = ((date now) + $ttl)
 
-  print $"provisioning ($name) on ($target.backend)/($target.region) — expires ($expires | format date '%H:%M')"
+  print $"provisioning ($name) on ($target.backend)/($target.region), expires ($expires | format date '%H:%M')"
 
   let instance = (do ($adapter.create) {
     region: $target.region
@@ -133,13 +141,13 @@ export def "main up" [
     sleep 2sec
   }
   if not $seen {
-    error make {msg: $"($name) never joined the tailnet — instance ($instance.id) left running, run `nomad down`"}
+    error make {msg: $"($name) never joined the tailnet. Instance ($instance.id) is still running; run `nomad down`"}
   }
 
   tailscale set $"--exit-node=($name)"
 
   let geo = (http get https://ipinfo.io/json)
-  print $"egress ($geo.ip) — ($geo.city), ($geo.country)"
+  print $"egress ($geo.ip) in ($geo.city), ($geo.country)"
 }
 
 export def "main down" [] {
@@ -171,7 +179,7 @@ export def "main renew" [--ttl: duration = 4hr] {
 }
 
 export def "main image push" [] {
-  let out = (nix build $"($env.NOMAD_FLAKE)#packages.x86_64-linux.nomad-image" --no-link --print-out-paths)
+  let out = (nix build $"((flake))#packages.x86_64-linux.nomad-image" --no-link --print-out-paths)
   let id = ($out | path basename | split row "-" | first)
   let url = (r2 publish $out $id (secrets get-json "r2"))
 

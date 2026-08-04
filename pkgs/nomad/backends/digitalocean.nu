@@ -81,7 +81,7 @@ export def destroy-image [id: string] {
 export def create [spec: record] {
   let img = (image)
   if $img == null {
-    error make {msg: "no nomad image on digitalocean — run `nomad image push`"}
+    error make {msg: "no nomad image on digitalocean; run `nomad image push`"}
   }
 
   # Images are region-scoped. Transfer is free but not instant.

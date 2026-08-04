@@ -83,7 +83,7 @@ export def destroy-image [id: string] {
 export def create [spec: record] {
   let snap = (snapshot)
   if $snap == null {
-    error make {msg: "no nomad snapshot on vultr — run `nomad image push`"}
+    error make {msg: "no nomad snapshot on vultr; run `nomad image push`"}
   }
 
   let instance = (
