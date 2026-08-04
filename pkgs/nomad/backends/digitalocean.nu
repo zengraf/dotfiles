@@ -152,7 +152,12 @@ export def create [spec: record] {
     | get droplet
   )
 
-  {id: $droplet.id, ipv4: ($droplet.networks?.v4? | default [] | where type == "public" | get ip_address? | get 0?)}
+  # DigitalOcean IDs are integers where Vultr's are UUID strings; the adapter
+  # contract is strings, so normalise here rather than at every call site.
+  {
+    id: ($droplet.id | into string)
+    ipv4: ($droplet.networks?.v4? | default [] | where type == "public" | get ip_address? | get 0?)
+  }
 }
 
 export def list [] {
@@ -160,7 +165,7 @@ export def list [] {
   | get droplets
   | each {|d|
     {
-      id: $d.id
+      id: ($d.id | into string)
       region: $d.region.slug
       tags: ($d.tags? | default [])
       created: ($d.created_at | into datetime)
