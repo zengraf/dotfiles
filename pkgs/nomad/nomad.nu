@@ -66,18 +66,23 @@ def mint-authkey [ttl: duration] {
   } | get key
 }
 
+# Every adapter call is `null | do …`: inside an `each`, the loop's record is the
+# block's pipeline input and `do` forwards it into the closure, where the
+# adapter's first `http` command rejects it. Wrapping in a subexpression does not
+# help; only piping null clears the input.
+
 # Includes unconfigured backends, so `regions` can show what a credential buys.
 def catalogue [] {
   mod registry | transpose name adapter | each {|b|
-    let ready = (do ($b.adapter.configured))
-    do ($b.adapter.regions) | each {|r| $r | insert backend $b.name | insert configured $ready }
+    let ready = (null | do ($b.adapter.configured))
+    null | do ($b.adapter.regions) | each {|r| $r | insert backend $b.name | insert configured $ready }
   } | flatten
 }
 
 # Every API call goes through this. A half-provisioned machine must still destroy
 # what it created elsewhere, so an unconfigured backend is skipped, not fatal.
 def active [] {
-  mod registry | transpose name adapter | where {|b| do ($b.adapter.configured) }
+  mod registry | transpose name adapter | where {|b| null | do ($b.adapter.configured) }
 }
 
 def pick [cc: string, backend?: string, region?: string] {
@@ -103,7 +108,7 @@ def pick [cc: string, backend?: string, region?: string] {
 
 def live [] {
   active | each {|b|
-    do ($b.adapter.list) | each {|i| $i | insert backend $b.name }
+    null | do ($b.adapter.list) | each {|i| $i | insert backend $b.name }
   } | flatten
 }
 
@@ -135,7 +140,7 @@ export def "main up" [
   let adapter = (mod registry | get $target.backend)
 
   let want = (image-id)
-  let published = (do ($adapter.image-id))
+  let published = (null | do ($adapter.image-id))
   if $published != $want {
     error make {msg: $"published image is ($published), config wants ($want); run `nomad image push`"}
   }
@@ -145,7 +150,7 @@ export def "main up" [
 
   print $"provisioning ($name) on ($target.backend)/($target.region), expires ($expires | format date '%H:%M')"
 
-  let instance = (do ($adapter.create) {
+  let instance = (null | do ($adapter.create) {
     region: $target.region
     plan: $target.plan
     hostname: $name
@@ -181,7 +186,7 @@ export def "main down" [] {
   try { ^(ts) set --exit-node= } catch { print "warning: could not clear exit node" }
 
   let gone = (live | each {|i|
-    do ((mod registry | get $i.backend).destroy) $i.id
+    null | do ((mod registry | get $i.backend).destroy) $i.id
     $i | select backend id region
   })
   if ($gone | is-empty) { print "nothing to destroy" } else { $gone }
@@ -201,7 +206,7 @@ export def "main status" [] {
 export def "main renew" [--ttl: duration = 4hr] {
   let expires = ((date now) + $ttl)
   live | each {|i|
-    do ((mod registry | get $i.backend).retag) $i.id [$TAG $"nomad-exp-(($expires | format date '%s'))"]
+    null | do ((mod registry | get $i.backend).retag) $i.id [$TAG $"nomad-exp-(($expires | format date '%s'))"]
     $i | select backend id | insert expires $expires
   }
 }
@@ -218,13 +223,13 @@ export def "main image push" [] {
   print $"published ($url)"
 
   active | each {|b|
-    let old = (do ($b.adapter.image-id))
+    let old = (null | do ($b.adapter.image-id))
     if $old == $id {
       print $"($b.name): already at ($id)"
     } else {
       print $"($b.name): importing ($id), replacing ($old | default 'nothing')"
-      do ($b.adapter.ensure-image) $url $id
-      if $old != null { do ($b.adapter.destroy-image) $old }
+      null | do ($b.adapter.ensure-image) $url $id
+      if $old != null { null | do ($b.adapter.destroy-image) $old }
     }
   }
   print "done"
@@ -237,7 +242,7 @@ export def "main reap" [] {
   live | each {|i|
     let expires = (expiry-of $i.tags)
     if $expires == null or $expires < $now {
-      do ((mod registry | get $i.backend).destroy) $i.id
+      null | do ((mod registry | get $i.backend).destroy) $i.id
       print $"reaped ($i.backend)/($i.id) ($expires | default 'no expiry tag')"
     }
   }
