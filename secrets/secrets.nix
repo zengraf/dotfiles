@@ -18,4 +18,5 @@ in {
   "nomad/tailscale-oauth.age".publicKeys = [ operator ];
   "nomad/vultr.age".publicKeys = [ operator routerSsh ];
   "nomad/digitalocean.age".publicKeys = [ operator routerSsh ];
+  "nomad/onecloudplanet.age".publicKeys = [ operator routerSsh ];
 }

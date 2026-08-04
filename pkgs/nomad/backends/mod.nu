@@ -1,5 +1,6 @@
 use vultr.nu
 use digitalocean.nu
+use onecloudplanet.nu
 
 # Nu resolves `use` at parse time, so backends are listed rather than discovered.
 export def registry [] {
@@ -14,6 +15,17 @@ export def registry [] {
       list: {|| vultr list }
       destroy: {|id| vultr destroy $id }
       retag: {|id, tags| vultr retag $id $tags }
+    }
+    onecloudplanet: {
+      configured: {|| onecloudplanet configured }
+      regions: {|| onecloudplanet regions }
+      image-id: {|| onecloudplanet image-id }
+      ensure-image: {|url, id| onecloudplanet ensure-image $url $id }
+      destroy-image: {|id| onecloudplanet destroy-image $id }
+      create: {|spec| onecloudplanet create $spec }
+      list: {|| onecloudplanet list }
+      destroy: {|id| onecloudplanet destroy $id }
+      retag: {|id, tags| onecloudplanet retag $id $tags }
     }
     digitalocean: {
       configured: {|| digitalocean configured }
