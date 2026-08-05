@@ -233,7 +233,7 @@ export def "main image push" [] {
       print $"($b.name): already at ($id)"
     } else {
       print $"($b.name): importing ($id), replacing ($old | default 'nothing')"
-      do ($b.adapter.ensure-image) $url $id
+      do ($b.adapter.ensure-image) {url: $url, path: ($out | path join "nomad.img"), id: $id}
       if $old != null { do ($b.adapter.destroy-image) $old }
     }
   }

@@ -9,7 +9,7 @@ export def registry [] {
       configured: {|| vultr configured }
       regions: {|| vultr regions }
       image-id: {|| vultr image-id }
-      ensure-image: {|url, id| vultr ensure-image $url $id }
+      ensure-image: {|spec| vultr ensure-image $spec }
       destroy-image: {|id| vultr destroy-image $id }
       create: {|spec| vultr create $spec }
       list: {|| vultr list }
@@ -20,7 +20,7 @@ export def registry [] {
       configured: {|| onecloudplanet configured }
       regions: {|| onecloudplanet regions }
       image-id: {|| onecloudplanet image-id }
-      ensure-image: {|url, id| onecloudplanet ensure-image $url $id }
+      ensure-image: {|spec| onecloudplanet ensure-image $spec }
       destroy-image: {|id| onecloudplanet destroy-image $id }
       create: {|spec| onecloudplanet create $spec }
       list: {|| onecloudplanet list }
@@ -31,7 +31,7 @@ export def registry [] {
       configured: {|| digitalocean configured }
       regions: {|| digitalocean regions }
       image-id: {|| digitalocean image-id }
-      ensure-image: {|url, id| digitalocean ensure-image $url $id }
+      ensure-image: {|spec| digitalocean ensure-image $spec }
       destroy-image: {|id| digitalocean destroy-image $id }
       create: {|spec| digitalocean create $spec }
       list: {|| digitalocean list }

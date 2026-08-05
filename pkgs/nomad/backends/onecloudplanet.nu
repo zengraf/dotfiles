@@ -197,49 +197,105 @@ export def image-id [] {
   if $img == null { null } else { $img.name | str replace "nomad-" "" }
 }
 
-export def ensure-image [url: string, id: string] {
-  let s = (session)
-  let region = (default-region $s)
-  let glance = (endpoint $s "image" $region)
+# One import attempt against a fresh image record. Returns the id on success, or
+# null after cleaning up, so the caller can try another method. Each attempt gets
+# its own record: a failed task stays attached to the image, so reusing one makes
+# the next attempt look instantly failed.
+def attempt [
+  s: record
+  glance: string
+  name: string
+  method: record
+  path: string
+] {
   let h = [X-Auth-Token $s.token]
 
-  let existing = (image-named $s $region $"nomad-($id)")
-
-  let img = if $existing != null {
-    print $"  onecloudplanet: adopting in-flight image ($existing.id)"
-    $existing
-  } else {
-    let created = (
-      http post --headers $h --content-type application/json $"($glance)/v2/images" {
-        name: $"nomad-($id)"
-        disk_format: "raw"
-        container_format: "bare"
-        visibility: "private"
-      }
-    )
-    # Glance fetches the URL itself rather than us streaming 1.6 GiB through here.
-    http post --headers $h --content-type application/json $"($glance)/v2/images/($created.id)/import" {
-      method: {name: "web-download", uri: $url}
+  let img = (
+    http post --headers $h --content-type application/json $"($glance)/v2/images" {
+      name: $name
+      disk_format: "raw"
+      container_format: "bare"
+      visibility: "private"
     }
-    print $"  onecloudplanet: image ($created.id) created, importing"
-    $created
+  )
+
+  if $method.name == "glance-direct" {
+    let size = (ls $path | get size | first | into int)
+    print $"  onecloudplanet: staging ($size | into filesize), this uploads the whole image"
+    # Content-Length is set explicitly because Nu would otherwise
+    # send it chunked, which not every Glance frontend accepts.
+    let stage = $"($glance)/v2/images/($img.id)/stage"
+    let hdrs = [X-Auth-Token $s.token Content-Length $size]
+    open --raw $path | http put --headers $hdrs --content-type application/octet-stream $stage
   }
+
+  http post --headers $h --content-type application/json $"($glance)/v2/images/($img.id)/import" {
+    method: $method
+  }
+  print $"  onecloudplanet: image ($img.id) importing via ($method.name)"
 
   for i in 1..360 {
     let cur = (http get --headers $h $"($glance)/v2/images/($img.id)")
     if $cur.status == "active" {
-      print "  onecloudplanet: import complete"
+      print $"  onecloudplanet: import complete \(($cur.size? | default 0 | into filesize)\)"
       return $img.id
     }
-    if $cur.status in ["killed" "deleted"] {
-      error make {msg: $"onecloudplanet rejected the image at ($url)"}
+
+    # The import runs as an async task, so a rejection never surfaces at the call
+    # site: the image sits in `queued` while the task records the failure.
+    let failed = (
+      http get --headers $h --allow-errors $"($glance)/v2/images/($img.id)/tasks"
+      | get tasks?
+      | default []
+      | where status == "failure"
+      | get 0?
+    )
+    if $failed != null or ($cur.status in ["killed" "deleted"]) {
+      let why = ($failed.message? | default $cur.status)
+      let store = ($cur.os_glance_failed_import? | default "")
+      print $"  onecloudplanet: ($method.name) failed: ($why) (store: ($store))"
+      http delete --headers $h --allow-errors $"($glance)/v2/images/($img.id)"
+      return null
     }
+
     if ($i mod 6) == 0 {
       print $"  onecloudplanet: still importing \(($cur.status)\), ($i * 10)s elapsed"
     }
     sleep 10sec
   }
-  error make {msg: $"onecloudplanet image ($img.id) did not finish importing"}
+
+  http delete --headers $h --allow-errors $"($glance)/v2/images/($img.id)"
+  error make {msg: "onecloudplanet import timed out"}
+}
+
+export def ensure-image [spec: record] {
+  let s = (session)
+  let region = (default-region $s)
+  let glance = (endpoint $s "image" $region)
+  let h = [X-Auth-Token $s.token]
+  let name = $"nomad-($spec.id)"
+
+  let stale = (image-named $s $region $name)
+  if $stale != null {
+    if $stale.status == "active" {
+      print $"  onecloudplanet: already published as ($stale.id)"
+      return $stale.id
+    }
+    # A record stuck in `queued` holds no data and still bills, so clear it.
+    print $"  onecloudplanet: discarding incomplete image ($stale.id)"
+    http delete --headers $h --allow-errors $"($glance)/v2/images/($stale.id)"
+  }
+
+  # web-download first: it costs us no upload bandwidth. Their Glance has been
+  # seen to fail this against the RBD store, hence the fallback.
+  let via_url = (attempt $s $glance $name {name: "web-download", uri: $spec.url} $spec.path)
+  if $via_url != null { return $via_url }
+
+  print "  onecloudplanet: falling back to direct upload"
+  let via_put = (attempt $s $glance $name {name: "glance-direct"} $spec.path)
+  if $via_put != null { return $via_put }
+
+  error make {msg: "onecloudplanet: both web-download and glance-direct failed"}
 }
 
 export def destroy-image [id: string] {

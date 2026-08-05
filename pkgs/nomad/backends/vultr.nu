@@ -64,7 +64,10 @@ export def image-id [] {
   if $snap == null { null } else { $snap.description | str replace "nomad-" "" }
 }
 
-export def ensure-image [url: string, id: string] {
+export def ensure-image [spec: record] {
+  let url = $spec.url
+  let id = $spec.id
+
   let h = (auth)
 
   # An earlier run may have started this import and given up waiting. Adopt it,
