@@ -197,78 +197,22 @@ export def image-id [] {
   if $img == null { null } else { $img.name | str replace "nomad-" "" }
 }
 
-# One import attempt against a fresh image record. Returns the id on success, or
-# null after cleaning up, so the caller can try another method. Each attempt gets
-# its own record: a failed task stays attached to the image, so reusing one makes
-# the next attempt look instantly failed.
-def attempt [
-  s: record
-  glance: string
-  name: string
-  method: record
-  path: string
-] {
-  let h = [X-Auth-Token $s.token]
-
-  let img = (
-    http post --headers $h --content-type application/json $"($glance)/v2/images" {
-      name: $name
-      disk_format: "raw"
-      container_format: "bare"
-      visibility: "private"
-    }
-  )
-
-  if $method.name == "glance-direct" {
-    let size = (ls $path | get size | first | into int)
-    print $"  onecloudplanet: staging ($size | into filesize), this uploads the whole image"
-    # Content-Length is set explicitly because Nu would otherwise
-    # send it chunked, which not every Glance frontend accepts.
-    let stage = $"($glance)/v2/images/($img.id)/stage"
-    let hdrs = [X-Auth-Token $s.token Content-Length $size]
-    open --raw $path | http put --headers $hdrs --content-type application/octet-stream $stage
+# Their Fleio layer, not OpenStack. Used only to create images: it fetches the
+# URL server-side in about half a minute, where a direct Glance upload would push
+# the whole image up from here. Everything else in this adapter is Keystone/Nova.
+def fleio [c: record] {
+  {
+    base: ($c.api_url? | default "https://core.ocplanet.cloud")
+    hdr: [Authorization $"OpenAPIToken ($c.api_token)"]
   }
-
-  http post --headers $h --content-type application/json $"($glance)/v2/images/($img.id)/import" {
-    method: $method
-  }
-  print $"  onecloudplanet: image ($img.id) importing via ($method.name)"
-
-  for i in 1..360 {
-    let cur = (http get --headers $h $"($glance)/v2/images/($img.id)")
-    if $cur.status == "active" {
-      print $"  onecloudplanet: import complete \(($cur.size? | default 0 | into filesize)\)"
-      return $img.id
-    }
-
-    # The import runs as an async task, so a rejection never surfaces at the call
-    # site: the image sits in `queued` while the task records the failure.
-    let failed = (
-      http get --headers $h --allow-errors $"($glance)/v2/images/($img.id)/tasks"
-      | get tasks?
-      | default []
-      | where status == "failure"
-      | get 0?
-    )
-    if $failed != null or ($cur.status in ["killed" "deleted"]) {
-      let why = ($failed.message? | default $cur.status)
-      let store = ($cur.os_glance_failed_import? | default "")
-      print $"  onecloudplanet: ($method.name) failed: ($why), store ($store)"
-      http delete --headers $h --allow-errors $"($glance)/v2/images/($img.id)"
-      return null
-    }
-
-    if ($i mod 6) == 0 {
-      print $"  onecloudplanet: still importing \(($cur.status)\), ($i * 10)s elapsed"
-    }
-    sleep 10sec
-  }
-
-  http delete --headers $h --allow-errors $"($glance)/v2/images/($img.id)"
-  error make {msg: "onecloudplanet import timed out"}
 }
 
+# Glance's import taskflow is broken on this deployment: web-download and
+# glance-direct both fail into any store, while the legacy direct upload their
+# panel uses works. The Fleio call below ends in that same direct upload, just
+# issued from inside their network.
 export def ensure-image [spec: record] {
+  let c = (creds)
   let s = (session)
   let region = (default-region $s)
   let glance = (endpoint $s "image" $region)
@@ -281,21 +225,41 @@ export def ensure-image [spec: record] {
       print $"  onecloudplanet: already published as ($stale.id)"
       return $stale.id
     }
-    # A record stuck in `queued` holds no data and still bills, so clear it.
+    # A record short of `active` holds no usable data and still bills.
     print $"  onecloudplanet: discarding incomplete image ($stale.id)"
     http delete --headers $h --allow-errors $"($glance)/v2/images/($stale.id)"
   }
 
-  # web-download first: it costs us no upload bandwidth. Their Glance has been
-  # seen to fail this against the RBD store, hence the fallback.
-  let via_url = (attempt $s $glance $name {name: "web-download", uri: $spec.url} $spec.path)
-  if $via_url != null { return $via_url }
+  let f = (fleio $c)
+  print $"  onecloudplanet: asking their backend to fetch ($spec.url)"
+  http post --headers $f.hdr --content-type application/json $"($f.base)/backend/api/openstack/images" {
+    name: $name
+    source: "url"
+    url: $spec.url
+    disk_format: "raw"
+    container_format: "bare"
+    region: $region
+  }
 
-  print "  onecloudplanet: falling back to direct upload"
-  let via_put = (attempt $s $glance $name {name: "glance-direct"} $spec.path)
-  if $via_put != null { return $via_put }
-
-  error make {msg: "onecloudplanet: both web-download and glance-direct failed"}
+  # Poll Glance rather than their wrapper, so the success condition is the same
+  # one `create` later depends on.
+  for i in 1..120 {
+    let cur = (image-named $s $region $name)
+    if $cur != null {
+      if $cur.status == "active" {
+        print $"  onecloudplanet: stored in ($cur.stores? | default '?')"
+        return $cur.id
+      }
+      if $cur.status in ["killed" "deleted"] {
+        error make {msg: $"onecloudplanet rejected the image, status ($cur.status)"}
+      }
+    }
+    if ($i mod 6) == 0 {
+      print $"  onecloudplanet: still fetching, ($i * 5)s elapsed"
+    }
+    sleep 5sec
+  }
+  error make {msg: $"onecloudplanet image ($name) never became active"}
 }
 
 export def destroy-image [id: string] {
