@@ -232,13 +232,26 @@ export def ensure-image [spec: record] {
 
   let f = (fleio $c)
   print $"  onecloudplanet: asking their backend to fetch ($spec.url)"
-  http post --headers $f.hdr --content-type application/json $"($f.base)/backend/api/openstack/images" {
-    name: $name
-    source: "url"
-    url: $spec.url
-    disk_format: "raw"
-    container_format: "bare"
-    region: $region
+
+  # Documented as multipart/form-data, which Nu cannot encode, but that is for
+  # the file-upload path; with source=url there are no parts. min_disk, min_ram
+  # and architecture mirror an image their own panel created successfully.
+  let r = (
+    http post --headers $f.hdr --content-type application/x-www-form-urlencoded --full --allow-errors
+      $"($f.base)/backend/api/openstack/images" {
+        active_client: $c.active_client
+        name: $name
+        source: "url"
+        url: $spec.url
+        disk_format: "raw"
+        region: $region
+        architecture: "x86_64"
+        min_disk: 1
+        min_ram: 1
+      }
+  )
+  if $r.status >= 300 {
+    error make {msg: $"onecloudplanet refused the image request with ($r.status): ($r.body | to json -r)"}
   }
 
   # Poll Glance rather than their wrapper, so the success condition is the same
