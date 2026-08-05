@@ -151,6 +151,10 @@
   system.etc.overlay.enable = true;
   systemd.sysusers.enable = true;
 
+  # Nothing on this node outlives it, so nothing needs to reach the disk.
+  services.journald.storage = "volatile";
+  boot.tmp.useTmpfs = true;
+
   documentation.enable = false;
   documentation.nixos.enable = false;
   environment.defaultPackages = [ ];

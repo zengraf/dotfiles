@@ -16,7 +16,9 @@
     format = "raw";
     partitionTableType = "legacy";
     diskSize = "auto";
-    additionalSpace = "256M";
+    # Slack on top of the closure. The node keeps no state worth the name: logs
+    # are volatile, /tmp is tmpfs, and tailscale's state is a few hundred KB.
+    additionalSpace = "32M";
     copyChannel = false;
     deterministic = true;
     label = "nixos";
