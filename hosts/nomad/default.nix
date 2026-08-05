@@ -86,6 +86,7 @@
     path = [
       pkgs.curl
       pkgs.jq
+      pkgs.util-linux
       config.services.tailscale.package
     ];
     serviceConfig = {
@@ -93,26 +94,56 @@
       RemainAfterExit = true;
     };
     script = ''
-      set -euo pipefail
+      set -uo pipefail
+
+      # Vultr, DigitalOcean, the EC2-compatible route, and OpenStack's native
+      # path. OpenStack only serves the EC2 one if the operator enables it.
+      urls="
+        http://169.254.169.254/v1/user-data
+        http://169.254.169.254/metadata/v1/user-data
+        http://169.254.169.254/latest/user-data
+        http://169.254.169.254/openstack/latest/user_data
+      "
 
       user_data=""
       for attempt in $(seq 1 30); do
-        for url in \
-          http://169.254.169.254/v1/user-data \
-          http://169.254.169.254/metadata/v1/user-data \
-          http://169.254.169.254/latest/user-data
-        do
+        for url in $urls; do
           if user_data=$(curl -fsS --max-time 3 "$url" 2>/dev/null) \
             && jq -e . >/dev/null 2>&1 <<<"$user_data"; then
+            echo "user-data from $url"
             break 2
           fi
         done
         user_data=""
-        sleep 1
+        [ "$attempt" = 1 ] && echo "metadata service not answering yet, retrying"
+        sleep 2
       done
 
+      # With force_config_drive there is no metadata service at all: it arrives
+      # as an attached volume instead.
       if [ -z "$user_data" ]; then
-        echo "no usable user-data from the metadata service" >&2
+        for label in config-2 CONFIG-2 cidata CIDATA; do
+          dev="/dev/disk/by-label/$label"
+          [ -e "$dev" ] || continue
+          mkdir -p /run/config-drive
+          if mount -o ro "$dev" /run/config-drive 2>/dev/null; then
+            for f in /run/config-drive/openstack/latest/user_data /run/config-drive/user-data; do
+              if [ -r "$f" ] && jq -e . >/dev/null 2>&1 <"$f"; then
+                user_data=$(cat "$f")
+                echo "user-data from config drive $label"
+                break
+              fi
+            done
+            umount /run/config-drive || true
+          fi
+          [ -n "$user_data" ] && break
+        done
+      fi
+
+      if [ -z "$user_data" ]; then
+        echo "no user-data from any metadata source; tried:" >&2
+        for url in $urls; do echo "  $url" >&2; done
+        echo "  config drive labels: config-2 CONFIG-2 cidata CIDATA" >&2
         exit 1
       fi
 

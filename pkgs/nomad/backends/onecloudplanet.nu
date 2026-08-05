@@ -302,6 +302,10 @@ export def create [spec: record] {
         networks: [{uuid: (network $s $spec.region)}]
         # Nova takes user-data base64-encoded, like Vultr and unlike DigitalOcean.
         user_data: ($spec.user_data | encode base64)
+        # Without this Nova attaches no config drive, so on a deployment whose
+        # metadata service is unreachable there is no way for user-data or the
+        # network configuration to reach the guest at all.
+        config_drive: true
         tags: $spec.tags
       }
     }
