@@ -310,7 +310,9 @@ export def create [spec: record] {
 
   # The address is assigned after the build starts, so it is not in the create
   # response.
-  mut ip = null
+  # Starts as "" rather than null: Nu fixes a mutable's type from its initial
+  # value, and `null` would make every later string assignment a type error.
+  mut ip = ""
   for _ in 1..30 {
     let cur = (http get --headers $h $"($nova)/servers/($server.id)" | get server)
     let addrs = ($cur.addresses? | default {} | values | flatten | where version == 4)
@@ -321,7 +323,7 @@ export def create [spec: record] {
     sleep 2sec
   }
 
-  {id: $server.id, ipv4: $ip}
+  {id: $server.id, ipv4: (if $ip == "" { null } else { $ip })}
 }
 
 export def list [] {
