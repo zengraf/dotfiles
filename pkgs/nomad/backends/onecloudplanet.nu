@@ -233,11 +233,8 @@ export def ensure-image [spec: record] {
   let f = (fleio $c)
   print $"  onecloudplanet: asking their backend to fetch ($spec.url)"
 
-  # Documented as multipart/form-data, which Nu cannot encode, but that is for
-  # the file-upload path; with source=url there are no parts. min_disk, min_ram
-  # and architecture mirror an image their own panel created successfully.
   let r = (
-    http post --headers $f.hdr --content-type application/x-www-form-urlencoded --full --allow-errors
+    http post --headers $f.hdr --content-type multipart/form-data --full --allow-errors
       $"($f.base)/backend/api/openstack/images" {
         active_client: $c.active_client
         name: $name
