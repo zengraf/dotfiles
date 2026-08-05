@@ -11,7 +11,9 @@
   ];
 
   boot = {
-    growPartition = true;
+    # No growPartition: it pulls cloud-utils and with it all of python3, for
+    # 135 MB, to enlarge a root filesystem a stateless node never fills.
+    initrd.systemd.enable = true;
     kernelParams = [
       "console=ttyS0"
       "panic=1"
@@ -46,7 +48,6 @@
   fileSystems."/" = {
     device = "/dev/disk/by-label/nixos";
     fsType = "ext4";
-    autoResize = true;
   };
 
   networking = {
@@ -81,11 +82,7 @@
     description = "Join the tailnet as an ephemeral exit node";
     wantedBy = [ "multi-user.target" ];
     requires = [ "tailscaled.service" ];
-    after = [
-      "tailscaled.service"
-      "network-online.target"
-    ];
-    wants = [ "network-online.target" ];
+    after = [ "tailscaled.service" ];
     path = [
       pkgs.curl
       pkgs.jq
@@ -134,8 +131,7 @@
   systemd.services.nomad-nic-offload = {
     description = "Tune NIC offload for forwarded UDP";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
+    after = [ "nomad-join.service" ];
     path = [
       pkgs.ethtool
       pkgs.iproute2
@@ -150,15 +146,38 @@
     '';
   };
 
+  # The two activation scripts that need perl: /etc assembly and user creation.
+  # An overlay mount and systemd-sysusers replace both, and perl's 55 MB with it.
+  system.etc.overlay.enable = true;
+  systemd.sysusers.enable = true;
+
   documentation.enable = false;
   documentation.nixos.enable = false;
   environment.defaultPackages = [ ];
   services.udisks2.enable = false;
   nix.enable = false;
 
-  # No password and no authorized key: ingress is Tailscale SSH only.
+  # Nothing here rebuilds itself, runs containers, or renders a document.
+  system.disableInstallerTools = true;
+  boot.enableContainers = false;
+  programs.command-not-found.enable = false;
+  systemd.coredump.enable = false;
+  services.logrotate.enable = false;
+  environment.stub-ld.enable = false;
+  xdg.icons.enable = false;
+  xdg.mime.enable = false;
+  xdg.sounds.enable = false;
+  fonts.fontconfig.enable = false;
+
+  # No password and no authorized key: network ingress is Tailscale SSH only.
   users.mutableUsers = false;
   users.allowNoPasswordLogin = true;
+
+  # Autologin on the serial console. Reachable only through the provider's panel,
+  # which already implies control of the instance, and it is the sole way to
+  # diagnose a node that fails to join the tailnet: without it a failed join
+  # leaves a box nobody can enter.
+  services.getty.autologinUser = "root";
 
   system.stateVersion = "25.11";
 }
