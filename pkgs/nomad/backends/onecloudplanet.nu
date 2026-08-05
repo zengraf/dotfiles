@@ -149,20 +149,31 @@ def network [s: record, region: string] {
     | where status == "ACTIVE"
   )
 
-  let shared = ($nets | where {|n| ($n.shared? | default false) } | get id?)
+  # A tenant network, never the external one. External networks are the
+  # floating-IP pool: they are shared, and their subnets carry enable_dhcp=true
+  # for bookkeeping while no DHCP agent actually serves them, so an instance
+  # attached directly there sends DISCOVERs into silence.
   let chosen = (
-    if not ($shared | is-empty) {
-      $shared | first
-    } else {
-      $nets | where {|n| not ($n."router:external"? | default false) } | get id? | get 0?
-    }
+    $nets
+    | where {|n| not ($n."router:external"? | default false) }
+    | get id?
+    | get 0?
   )
   if $chosen == null {
     error make {
-      msg: $"could not pick a network in ($region); set NOMAD_OCP_NETWORK to a neutron network id"
+      msg: $"no tenant network in ($region); set NOMAD_OCP_NETWORK to a neutron network id"
     }
   }
   $chosen
+}
+
+def external-network [s: record, region: string] {
+  let neutron = (endpoint $s "network" $region)
+  http get --headers [X-Auth-Token $s.token] $"($neutron)/v2.0/networks"
+  | get networks
+  | where {|n| ($n."router:external"? | default false) }
+  | get id?
+  | get 0?
 }
 
 export def regions [] {
@@ -315,22 +326,38 @@ export def create [spec: record] {
     | get server
   )
 
-  # The address is assigned after the build starts, so it is not in the create
-  # response.
-  # Starts as "" rather than null: Nu fixes a mutable's type from its initial
-  # value, and `null` would make every later string assignment a type error.
-  mut ip = ""
+  # On a tenant network the instance only gets a 10.x address, so a floating IP
+  # from the external pool is what makes it reachable and lets it egress.
+  let neutron = (endpoint $s "network" $spec.region)
+  let nh = [X-Auth-Token $s.token]
+
+  mut port = ""
   for _ in 1..30 {
-    let cur = (http get --headers $h $"($nova)/servers/($server.id)" | get server)
-    let addrs = ($cur.addresses? | default {} | values | flatten | where version == 4)
-    if not ($addrs | is-empty) {
-      $ip = ($addrs | get addr | first)
+    let ports = (http get --headers $nh $"($neutron)/v2.0/ports?device_id=($server.id)" | get ports)
+    if not ($ports | is-empty) {
+      $port = ($ports | get id | first)
       break
     }
     sleep 2sec
   }
+  if $port == "" {
+    error make {msg: $"no neutron port appeared for server ($server.id)"}
+  }
 
-  {id: $server.id, ipv4: (if $ip == "" { null } else { $ip })}
+  let pool = (external-network $s $spec.region)
+  if $pool == null {
+    error make {msg: "no external network to allocate a floating IP from"}
+  }
+
+  let fip = (
+    http post --headers $nh --content-type application/json $"($neutron)/v2.0/floatingips" {
+      floatingip: {floating_network_id: $pool, port_id: $port}
+    }
+    | get floatingip
+  )
+  print $"  onecloudplanet: floating ip ($fip.floating_ip_address)"
+
+  {id: $server.id, ipv4: $fip.floating_ip_address}
 }
 
 export def list [] {
@@ -358,7 +385,21 @@ export def list [] {
 
 export def destroy [id: string] {
   let s = (session)
-  let nova = (endpoint $s "compute" (default-region $s))
+  let region = (default-region $s)
+  let nova = (endpoint $s "compute" $region)
+  let neutron = (endpoint $s "network" $region)
+  let nh = [X-Auth-Token $s.token]
+
+  # Release the floating IP first. It is a separate resource that outlives the
+  # server it was attached to, and at $0.10 a day it is the most expensive line
+  # on this backend: leaking one costs more than the instance ever did.
+  for p in (http get --headers $nh $"($neutron)/v2.0/ports?device_id=($id)" | get ports) {
+    for f in (http get --headers $nh $"($neutron)/v2.0/floatingips?port_id=($p.id)" | get floatingips) {
+      http delete --headers $nh $"($neutron)/v2.0/floatingips/($f.id)"
+      print $"  onecloudplanet: released ($f.floating_ip_address)"
+    }
+  }
+
   http delete --headers (nova-hdr $s) $"($nova)/servers/($id)"
 }
 
