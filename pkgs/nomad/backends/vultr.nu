@@ -166,6 +166,7 @@ export def list [] {
       tags: ($i.tags? | default [])
       created: ($i.date_created | into datetime)
       hourly: (if ($i.plan in $rates) { $rates | get $i.plan } else { 0.0 })
+      min_hours: 1
     }
   }
 }

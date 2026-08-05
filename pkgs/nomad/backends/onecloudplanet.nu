@@ -8,11 +8,14 @@ const NOVA_VERSION = "2.79"
 
 # OpenStack publishes neither country codes nor prices. Both are on their
 # website, not in any API, so they live here rather than in the credential file.
-# Prices are per hour for the smallest flavor with at least 1 GB.
+# `hourly` is the smallest flavor with at least 1 GB. `daily` is the public IP
+# ($0.10) plus the boot disk ($0.06), both billed in whole days: a ten-minute
+# session and a twenty-hour one cost the same $0.16, and together they dwarf the
+# $0.01/hr instance charge.
 const REGIONS = {
-  "ua-central-1": {cc: "ua", city: "Kyiv", hourly: 0.01}
-  "pl-poznan-1": {cc: "pl", city: "Poznan", hourly: 0.01}
-  "nl-ams-1": {cc: "nl", city: "Amsterdam", hourly: 0.01}
+  "ua-central-1": {cc: "ua", city: "Kyiv", hourly: 0.01, daily: 0.16}
+  "pl-poznan-1": {cc: "pl", city: "Poznan", hourly: 0.01, daily: 0.16}
+  "nl-ams-1": {cc: "nl", city: "Amsterdam", hourly: 0.01, daily: 0.16}
 }
 
 def creds [] {
@@ -335,7 +338,7 @@ export def list [] {
   mut out = []
   for region in (known $s) {
     let nova = (endpoint $s "compute" $region)
-    let rate = ($REGIONS | get $region | get hourly)
+    let rate = ($REGIONS | get $region)
     let servers = (
       http get --headers (nova-hdr $s) $"($nova)/servers/detail?tags=nomad" | get servers
     )
@@ -345,7 +348,8 @@ export def list [] {
         region: $region
         tags: ($v.tags? | default [])
         created: ($v.created | into datetime)
-        hourly: $rate
+        hourly: $rate.hourly
+        daily: $rate.daily
       }
     }))
   }

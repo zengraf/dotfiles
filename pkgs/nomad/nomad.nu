@@ -198,9 +198,24 @@ export def "main down" [] {
 export def "main status" [] {
   live | each {|i|
     let up = ((date now) - $i.created)
-    # Vultr bills a 1h minimum, so a partial hour would understate the cost.
-    let hours = ([1 ($up / 1hr | math ceil)] | math max)
-    $i | insert uptime $up | insert cost ($hours * $i.hourly) | insert expires (expiry-of $i.tags)
+
+    # Vultr bills whole hours with a one-hour floor; the others bill by the
+    # second. `daily` covers charges levied per calendar day whatever the
+    # uptime, such as OneCloudPlanet's public IP, which dominates a short
+    # session and makes tearing down early save nothing.
+    let floor = ($i.min_hours? | default 0)
+    let hours = if $floor > 0 {
+      [$floor ($up / 1hr | math ceil)] | math max
+    } else {
+      $up / 1hr
+    }
+    let days = ([1 ($up / 1day | math ceil)] | math max)
+    let daily = ($i.daily? | default 0.0)
+
+    $i
+    | insert uptime $up
+    | insert cost (($hours * $i.hourly) + ($days * $daily))
+    | insert expires (expiry-of $i.tags)
   }
   | select backend id region uptime expires cost
   | update cost {|r| $"$($r.cost | into string --decimals 4)" }
