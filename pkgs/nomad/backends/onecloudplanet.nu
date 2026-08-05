@@ -253,7 +253,7 @@ def attempt [
     if $failed != null or ($cur.status in ["killed" "deleted"]) {
       let why = ($failed.message? | default $cur.status)
       let store = ($cur.os_glance_failed_import? | default "")
-      print $"  onecloudplanet: ($method.name) failed: ($why) (store: ($store))"
+      print $"  onecloudplanet: ($method.name) failed: ($why), store ($store)"
       http delete --headers $h --allow-errors $"($glance)/v2/images/($img.id)"
       return null
     }
