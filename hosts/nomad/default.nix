@@ -68,6 +68,10 @@
       DHCP = "yes";
       IPv6AcceptRA = true;
     };
+    # networkd defaults to an RFC 4361 DUID client identifier. Neutron's dnsmasq
+    # runs with dhcp-ignore=tag:!known and keys its host entries by MAC, so a
+    # DUID-bearing request matches nothing and is dropped without a reply.
+    dhcpV4Config.ClientIdentifier = "mac";
     linkConfig.RequiredForOnline = "routable";
   };
 
