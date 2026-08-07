@@ -3,12 +3,26 @@ let
   marketplace = "dotfiles";
   root = ".local/share/claude-lsp";
 
+  # TypeScript 7 ships its language server inside the `tsc` binary and is roughly
+  # an order of magnitude faster than vtsls, but nixpkgs is still on 5.9 and a
+  # global tsgo would break repos that predate TS 7 (it rejects `baseUrl`). So
+  # prefer the workspace's own TS 7 when it has one, else fall back to vtsls.
+  tsLsp = pkgs.writeShellScript "claude-ts-lsp" ''
+    tsc=node_modules/.bin/tsc
+    if [ -x "$tsc" ]; then
+      major=$("$tsc" --version | sed -n 's/^Version \([0-9]*\).*/\1/p')
+      if [ -n "$major" ] && [ "$major" -ge 7 ]; then
+        exec "$tsc" --lsp --stdio
+      fi
+    fi
+    exec ${pkgs.vtsls}/bin/vtsls --stdio
+  '';
+
   plugins = {
     ts-lsp = {
-      description = "TypeScript and JavaScript via vtsls";
+      description = "TypeScript and JavaScript via tsgo (TS 7), falling back to vtsls";
       servers.vtsls = {
-        command = "${pkgs.vtsls}/bin/vtsls";
-        args = [ "--stdio" ];
+        command = "${tsLsp}";
         extensionToLanguage = {
           ".ts" = "typescript";
           ".mts" = "typescript";

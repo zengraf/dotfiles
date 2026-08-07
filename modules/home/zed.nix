@@ -69,6 +69,7 @@ in
       "svelte"
       "terraform"
       "toml"
+      "tsgo"
     ];
 
     userSettings = {
