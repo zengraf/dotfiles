@@ -21,7 +21,7 @@ if $cmd == "" { allow }
 # merge or rebase it carries no message and aborts on its own.
 let writes_commit = (($cmd =~ '(^|\s)git\s([^|;&]*\s)?commit(\s|$)') and ($cmd =~ '(^|\s)(-[a-zA-Z]*[mcCF]|--message|--file|--reuse-message|--reedit-message|--amend|--fixup|--squash|-e|--edit)(\s|=|$)'))
 if $writes_commit {
-  deny "Do not run this commit. When shipping a feature, stage the work and surface the commit to the user: show them the diff and a proposed message and let them run it. The only commit you may run yourself finishes a merge or rebase with git's default message (a bare git commit, no -m)."
+  deny "Do not run this commit. When shipping a feature, leave the work unstaged and surface the commit to the user: show them the diff and a proposed message and let them run it. The only commit you may run yourself finishes a merge or rebase with git's default message (a bare git commit, no -m)."
 }
 
 # A merge or rebase whose message you wrote yourself.

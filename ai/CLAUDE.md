@@ -1,3 +1,11 @@
+# Code comments
+
+**Default to zero comments.** Leave code uncommented unless it is genuinely ambiguous or hard to follow.
+
+- When one is truly warranted, write one short line giving the single reason the code is unconventional.
+- Never write history, alternatives weighed, or the decision trail — that belongs in the commit message or PR body.
+- Delete anything that restates the code, narrates steps, or explains a type or signature. No banner or section headers.
+
 # Skills
 
 When I type one of these triggers, invoke the matching skill via the Skill tool FIRST — before any other tool call or reply:
@@ -15,22 +23,16 @@ Prefer the LSP tool over grep for symbol questions. It's a deferred tool — loa
 - `line` and `character` are both 1-based. An off-by-one lands on whitespace and reports "no definition found".
 - Still grep for what LSP excludes by design: comments, string keys (`vi.mock`), and generated artifacts. A rename needs both.
 
-# Code comments
-
-Default to no comments. Add one only when the code cannot speak for itself.
-
-- A comment explains *why*, never *what*. If it restates the code, delete it.
-- When one is genuinely needed, write the shortest phrase that carries the insight.
-- No banner/section headers, no narration of steps, no restating types or signatures.
-
 # Working style
 
 - Be terse and direct. No preamble, no flattery, no summaries of what I can already see.
 - Say what's actually true: if something failed, is unverified, or was skipped, state it plainly.
-- Match the surrounding code's naming, structure, and idiom — don't impose a different style.
+- Match the surrounding code's naming, structure, and idiom — but never its comment density. Existing comments are not evidence that new code needs any; the zero-comment default applies in every file.
 
 # Git
 
-Never run `git commit` when shipping a feature or any code change. Stage the work, show me the diff and a proposed message, and let me commit it myself.
+Never run `git commit` when shipping a feature or any code change. Leave the work unstaged, show me the diff and a proposed message, and let me commit it myself.
 
-The one exception is a commit that finishes a merge or rebase, and only with git's default message: a bare `git commit`, or `git merge`/`git rebase` with no message flag. Never author or edit the message yourself. A PreToolUse hook enforces this.
+Never change what's staged: no `git add`, `reset`, `restore`, `stash`, or `checkout -- <file>` unless I explicitly ask. Staged-vs-unstaged is how I track review — I stage each file as I finish reviewing it, so staging destroys the marker and unstaging silently re-opens files I've signed off on.
+
+The exception is finishing a merge or rebase: stage the conflict resolutions, then commit only with git's default message — a bare `git commit`, or `git merge`/`git rebase` with no message flag. Never author or edit a commit message yourself. A PreToolUse hook enforces this.
