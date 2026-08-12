@@ -1,7 +1,6 @@
 ---
 name: ctx
 description: "Load, create, or switch the active task context — a dense, persistent working-memory file in ~/.local/share/claude-contexts/ that makes resuming long tasks cheap and prevents context poisoning"
-trigger: /ctx
 ---
 
 # /ctx — task contexts

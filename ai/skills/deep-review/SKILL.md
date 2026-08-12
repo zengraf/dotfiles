@@ -1,7 +1,7 @@
 ---
 name: deep-review
 description: "Review a PR branch written by another model — fetch PR + Linear ticket context, output critical issues and nitpicks"
-trigger: /deep-review
+disable-model-invocation: true
 ---
 
 # /deep-review

@@ -1,7 +1,7 @@
 ---
 name: implement
 description: "Fetch a Linear ticket, create a branch, assess scope, and produce an implementation plan"
-trigger: /implement
+disable-model-invocation: true
 ---
 
 # /implement
