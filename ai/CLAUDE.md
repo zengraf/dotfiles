@@ -5,13 +5,13 @@
 **Keep what the code cannot say.** These earn one or two lines, because nothing in the file recovers them:
 
 - Why an absence (a field not added, a check not performed, an empty value, a lone enum variant, an unreachable branch) is deliberate. Absence leaves no trace, so the next reader takes it for unfinished work and fixes it.
-- Why the obvious alternative is wrong, when taking it would be a silent bug and not just a difference in taste. State the constraint that still holds and name the upstream bug or spec clause that forces it; a link may back that up but cannot be the whole comment. The deliberation ("we considered X") belongs in the commit message.
+- Why the obvious alternative is wrong, when taking it would be a silent bug and not just a difference in taste. Name the mechanism that fails: a syscall, an error message, an upstream bug, a spec clause. A rationale with no nameable mechanism is taste dressed up as constraint; delete it. A link may back the mechanism but cannot be the whole comment. The deliberation ("we considered X") belongs in the commit message.
 
-Anything not covered above gets one test: without the comment, would the next editor make a plausible edit that regresses? If it doesn't clearly pass, delete it.
+Before writing any comment, name the bullet it falls under; no clear answer means no comment. When the fit is arguable, one test decides: without the comment, would the next editor make a plausible edit that regresses? If it doesn't clearly pass, delete it.
 
 Write them in the present tense: describe the code as it stands, not the change that produced it.
 
-Doc comments on a crate's public API are documentation, not commentary, and so are `--help` strings, NixOS option descriptions, and anything else a user reads at runtime. Trim those to what a caller needs; never strip them.
+Doc comments are documentation, not commentary, only where the reader never opens the source: an API another project consumes, `--help` strings, NixOS option descriptions. Visibility isn't that test — a `pub fn` in a workspace-internal crate is plumbing, not public API, and the rules above apply to it unchanged. Trim documentation to what a caller needs; never strip it.
 
 # Code navigation
 
@@ -26,7 +26,7 @@ Prefer the LSP tool over grep for symbol questions. It's a deferred tool — loa
 
 - Be terse and direct. No preamble, no flattery, no summaries of what I can already see.
 - Say what's actually true: if something failed, is unverified, or was skipped, state it plainly.
-- Match the surrounding code's naming, structure, and idiom — but never its comment density. Existing comments are not evidence that new code needs any; apply the test above in every file.
+- Match the surrounding code's naming, structure, and idiom — but never its comment density. A file where every function is already documented is not a norm to match; the comment pre-flight applies there unchanged.
 
 # Git
 
