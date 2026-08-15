@@ -15,6 +15,7 @@ let
   sessionStartContexts = mkHook "claude-session-start-contexts" ../../../ai/hooks/session-start-contexts.nu;
   preToolUseContexts = mkHook "claude-pre-tool-use-contexts" ../../../ai/hooks/pre-tool-use-contexts.nu;
   preToolUseGitCommit = mkHook "claude-pre-tool-use-git-commit" ../../../ai/hooks/pre-tool-use-git-commit.nu;
+  postToolUseComments = mkHook "claude-post-tool-use-comments" ../../../ai/hooks/post-tool-use-comments.nu;
 in
 {
   SessionStart = [
@@ -45,6 +46,18 @@ in
         {
           type = "command";
           command = "${preToolUseGitCommit}";
+        }
+      ];
+    }
+  ];
+
+  PostToolUse = [
+    {
+      matcher = "Edit|Write";
+      hooks = [
+        {
+          type = "command";
+          command = "${postToolUseComments}";
         }
       ];
     }
