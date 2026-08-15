@@ -144,7 +144,26 @@ in
         };
       };
 
+      # Replaces Zed's defaults rather than extending them; the stock entries
+      # have to be repeated.
+      file_scan_exclusions = [
+        "**/.git"
+        "**/.svn"
+        "**/.hg"
+        "**/.jj"
+        "**/CVS"
+        "**/.DS_Store"
+        "**/Thumbs.db"
+        "**/.classpath"
+        "**/.settings"
+        "**/.devenv"
+        "**/.direnv"
+      ];
+
       lsp = {
+        # 0 disables the workspace-wide crawl, which the server runs off its own
+        # glob and so does not honour file_scan_exclusions.
+        bash-language-server.settings.bashIde.backgroundAnalysisMaxFiles = 0;
         biome = {
           settings = {
             require_config_file = true;
