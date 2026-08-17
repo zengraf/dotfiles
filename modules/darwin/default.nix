@@ -31,6 +31,7 @@
       "1password"
       "adobe-acrobat-reader"
       "arc"
+      "daisydisk"
       "ghostty"
       "google-drive"
       "iina"
@@ -42,7 +43,6 @@
     ];
     masApps = {
       "1Password for Safari" = 1569813296;
-      "DaisyDisk" = 411643860;
       "Keynote" = 361285480;
       "Numbers" = 361304891;
       "Pages" = 361309726;
