@@ -122,7 +122,11 @@ in
 
     basedpyright = {
       zedId = "basedpyright";
-      zed.settings."basedpyright.analysis.typeCheckingMode" = "all";
+      # Nested, never a flat "basedpyright.analysis.typeCheckingMode" key: Zed
+      # recognizes only "basedpyright" or the two-level "basedpyright.analysis",
+      # and on a miss its python adapter inserts its OWN "standard" default, so a
+      # flat three-level key is silently downgraded rather than dropped.
+      zed.settings.basedpyright.analysis.typeCheckingMode = "all";
       claude = {
         plugin = "py-lsp";
         server = "basedpyright";
@@ -133,7 +137,7 @@ in
         };
         # Zed uses "all"; kept lower here because these land in Claude's
         # context on every edit.
-        settings."basedpyright.analysis.typeCheckingMode" = "standard";
+        settings.basedpyright.analysis.typeCheckingMode = "standard";
       };
     }
     // resolver {
@@ -244,8 +248,9 @@ in
 
     bash = {
       zedId = "bash-language-server";
-      # 0 disables the workspace-wide crawl, which the server runs off its own
-      # glob and so does not honour file_scan_exclusions.
+      # 0 makes initiateBackgroundAnalysis return before globbing; the crawl runs
+      # off the server's own glob and ignores file_scan_exclusions, so left on it
+      # walks node_modules and holds a multi-GB heap in permanent GC.
       zed.settings.bashIde.backgroundAnalysisMaxFiles = 0;
     }
     // direct "${pkgs.bash-language-server}/bin/bash-language-server" [ "start" ];
