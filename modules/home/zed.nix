@@ -46,6 +46,7 @@ in
 
       agent_servers = {
         claude-acp = {
+          type = "custom";
           command = "${pkgs.claude-agent-acp}/bin/claude-agent-acp";
           args = [ ];
           env = {
