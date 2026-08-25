@@ -6,7 +6,7 @@
 }:
 let
   hooks = import ./hooks.nix { inherit pkgs; };
-  lsp = import ./lsp.nix { inherit config pkgs; };
+  lsp = import ../lsp/claude.nix { inherit config pkgs; };
 in
 {
   home.packages = [

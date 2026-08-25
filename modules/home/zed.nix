@@ -1,53 +1,11 @@
 { pkgs, ... }:
-
 let
-  mkBiomeConfig = lang: {
-    name = lang;
-    value = {
-      formatter = {
-        language_server = {
-          name = "biome";
-        };
-      };
-    };
-  };
-
-  mkBiomeConfigWithActions = lang: {
-    name = lang;
-    value = {
-      formatter = {
-        language_server = {
-          name = "biome";
-        };
-      };
-      code_actions_on_format = {
-        "source.fixAll.biome" = true;
-        "source.organizeImports.biome" = true;
-      };
-    };
-  };
-
-  biomeLanguagesWithActions = [
-    "JavaScript"
-    "TypeScript"
-    "TSX"
-  ];
-  biomeLanguagesOnly = [
-    "JSON"
-    "JSONC"
-    "CSS"
-    "GraphQL"
-  ];
-
-  biomeConfig =
-    builtins.listToAttrs (map mkBiomeConfigWithActions biomeLanguagesWithActions)
-    // builtins.listToAttrs (map mkBiomeConfig biomeLanguagesOnly);
+  lspZed = import ./lsp/zed.nix { inherit pkgs; };
 in
 {
-  home.packages = with pkgs; [
-    nil
-    nixfmt
-  ];
+  # nil resolves nixfmt off PATH; the servers themselves are absolute store
+  # paths in lsp/tools.nix and need no entry here.
+  home.packages = [ pkgs.nixfmt ];
 
   programs.zed-editor = {
     enable = true;
@@ -75,6 +33,17 @@ in
     userSettings = {
       load_direnv = "direct";
 
+      inherit (lspZed) lsp languages node;
+
+      # An extension auto-update swapped the project's pinned biome for a build
+      # whose daemon spins forever on workspace rescans (biomejs/biome#7538).
+      # Binary resolution no longer runs their wasm, but the pin keeps the
+      # server ids stable.
+      auto_update_extensions = {
+        biome = false;
+        tsgo = false;
+      };
+
       agent_servers = {
         claude-acp = {
           command = "${pkgs.claude-agent-acp}/bin/claude-agent-acp";
@@ -84,6 +53,12 @@ in
           };
           default_config_options = {
             model = "opus";
+            effort = "high";
+            fast = "off";
+            mode = "auto";
+          };
+          favorite_config_option_values = {
+            effort = [ "max" ];
           };
         };
       };
@@ -92,10 +67,16 @@ in
         provider = "copilot";
         mode = "subtle";
         enabled_in_text_threads = false;
+        copilot = {
+          proxy = null;
+          proxy_no_verify = null;
+          enterprise_uri = null;
+        };
       };
 
       agent = {
         default_profile = "ask";
+        dock = "left";
         default_model = {
           provider = "copilot_chat";
           model = "gpt-4o";
@@ -104,6 +85,7 @@ in
 
       autosave = "on_focus_change";
       helix_mode = true;
+      vim_mode = true;
       ui_font_size = 16;
       buffer_font_size = 16;
       theme = {
@@ -112,36 +94,13 @@ in
         dark = "Fleet Dark";
       };
 
-      languages = biomeConfig // {
-        Nix = {
-          tab_size = 2;
-          language_servers = [
-            "nil"
-            "!nixd"
-          ];
-        };
-        Python = {
-          language_servers = [
-            "basedpyright"
-            "ruff"
-          ];
-          code_actions_on_format = {
-            "source.fixAll.ruff" = true;
-            "source.organizeImports.ruff" = true;
-          };
-          formatter = {
-            language_server = {
-              name = "ruff";
-            };
-          };
-        };
-        Ruby = {
-          language_servers = [
-            "ruby-lsp"
-            "rubocop"
-            "!solargraph"
-          ];
-        };
+      diff_view_style = "split";
+      project_panel.dock = "right";
+      outline_panel.dock = "right";
+      collaboration_panel.dock = "right";
+      git_panel = {
+        dock = "right";
+        tree_view = false;
       };
 
       # Replaces Zed's defaults rather than extending them; the stock entries
@@ -159,44 +118,6 @@ in
         "**/.devenv"
         "**/.direnv"
       ];
-
-      lsp = {
-        # 0 disables the workspace-wide crawl, which the server runs off its own
-        # glob and so does not honour file_scan_exclusions.
-        bash-language-server.settings.bashIde.backgroundAnalysisMaxFiles = 0;
-        biome = {
-          settings = {
-            require_config_file = true;
-          };
-        };
-        nil = {
-          initialization_options = {
-            formatting.command = [ "nixfmt" ];
-          };
-        };
-        pylsp = {
-          initialization_options = {
-            plugins.mypy.enabled = true;
-          };
-        };
-        basedpyright = {
-          settings = {
-            "basedpyright.analysis.typeCheckingMode" = "all";
-          };
-        };
-        rubocop = {
-          initialization_options = {
-            safeAutocorrect = false;
-          };
-        };
-        ruby-lsp = {
-          initialization_options = {
-            enabledFeatures = {
-              diagnostics = false;
-            };
-          };
-        };
-      };
     };
   };
 }
