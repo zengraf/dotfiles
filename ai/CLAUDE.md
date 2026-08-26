@@ -41,5 +41,4 @@ The exception is finishing a merge or rebase: stage the conflict resolutions, th
 
 ## Grilling
 
-- Use the question tool where it is suitable and available.
-- Use examples to better illustrate the answers.
+Use `AskUserQuestion` with examples whenever a turn asks me to choose — including inside a skill whose own instructions prescribe a prose output format. Prose and the tool call are complements: the prose carries the argument, the tool carries the decision.
