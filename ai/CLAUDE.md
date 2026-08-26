@@ -36,3 +36,10 @@ Never run `git commit` when shipping a feature or any code change. Leave the wor
 Never change what's staged: no `git add`, `reset`, `restore`, `stash`, or `checkout -- <file>` unless I explicitly ask. Staged-vs-unstaged is how I track review — I stage each file as I finish reviewing it, so staging destroys the marker and unstaging silently re-opens files I've signed off on.
 
 The exception is finishing a merge or rebase: stage the conflict resolutions, then commit only with git's default message — a bare `git commit`, or `git merge`/`git rebase` with no message flag. Never author or edit a commit message yourself; a PreToolUse hook blocks commits that carry one. The staging rules above have no hook behind them.
+
+# Skills
+
+## Grilling
+
+- Use the question tool where it is suitable and available.
+- Use examples to better illustrate the answers.

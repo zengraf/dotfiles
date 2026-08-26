@@ -101,11 +101,11 @@
     "humanizer": {
       "flake": false,
       "locked": {
-        "lastModified": 1784701552,
-        "narHash": "sha256-qJIMwaas5Wnz270rUbPa4E5v2GQ62SQ1rKT0jmjYhyw=",
+        "lastModified": 1787119133,
+        "narHash": "sha256-n08pud3m9ka1Ymqv6qinSCUku975FM2LJRboi9ur5D4=",
         "owner": "blader",
         "repo": "humanizer",
-        "rev": "523374dee72d67c7b2b5f858ea0094ffda49c3ac",
+        "rev": "e2e92e7b4b8229253ed5c8e81dc65463fdeddda5",
         "type": "github"
       },
       "original": {
@@ -117,11 +117,11 @@
     "mattpocock-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1784629731,
-        "narHash": "sha256-o/H9s3t6ahBqFwpkOMBOTwpsvb33pgvpI9n0PA+uLYM=",
+        "lastModified": 1787581197,
+        "narHash": "sha256-N5tpUIHO2VFeJntBTl6/VLDIVpqoshwFxNJlfXXUwsQ=",
         "owner": "mattpocock",
         "repo": "skills",
-        "rev": "ed37663cc5fbef691ddfecd080dff42f7e7e350d",
+        "rev": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
         "type": "github"
       },
       "original": {
