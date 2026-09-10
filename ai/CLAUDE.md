@@ -14,15 +14,6 @@ Don't add comments, docstrings, or type annotations to code you didn't change.
 
 Doc comments are documentation, not commentary, only where the reader never opens the source: an API another project consumes, `--help` strings, NixOS option descriptions. Visibility isn't that test — a `pub fn` in a workspace-internal crate is plumbing, and the rules above apply to it unchanged. Trim documentation to what a caller needs; never strip it.
 
-# Code navigation
-
-Prefer the LSP tool over grep for symbol questions. It's a deferred tool — load it first with `ToolSearch("select:LSP")`.
-
-- `hover` for a resolved type or signature. `goToDefinition` / `findReferences` for the symbol graph. `documentSymbol` to outline a file. `incomingCalls` / `outgoingCalls` for call hierarchy.
-- Servers are configured for ts, py, rs, nix, and nu. The first call after a cold start can fail with `server is starting` — retry once, don't give up and fall back to grep.
-- `line` and `character` are both 1-based. An off-by-one lands on whitespace and reports "no definition found".
-- Still grep for what LSP excludes by design: comments, string keys (`vi.mock`), and generated artifacts. A rename needs both.
-
 # Working style
 
 - Be terse and direct. No preamble, no flattery, no summaries of what I can already see.

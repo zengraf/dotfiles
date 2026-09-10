@@ -1,4 +1,5 @@
 {
+  lib,
   username,
   ...
 }:
@@ -35,7 +36,10 @@
     "/Applications/Ghostty.app"
   ];
 
-  services.virby.memory = 4096;
+  services.virby = {
+    cores = lib.mkForce 3;
+    memory = 12228;
+  };
 
   home-manager.users.${username} = ./home.nix;
 
