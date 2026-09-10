@@ -22,6 +22,7 @@
       "homebrew/homebrew-core" = inputs.homebrew-core;
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
       "umputun/homebrew-apps" = inputs.homebrew-umputun;
+      "nikitabobko/homebrew-tap" = inputs.homebrew-nikitabobko;
     };
     mutableTaps = false;
   };
@@ -36,6 +37,7 @@
       "ghostty"
       "google-drive"
       "iina"
+      "nikitabobko/tap/aerospace"
       "obsidian"
       "tablepro"
       "tailscale-app"

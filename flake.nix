@@ -24,6 +24,10 @@
       url = "github:umputun/homebrew-apps";
       flake = false;
     };
+    homebrew-nikitabobko = {
+      url = "github:nikitabobko/homebrew-tap";
+      flake = false;
+    };
 
     humanizer = {
       url = "github:blader/humanizer";

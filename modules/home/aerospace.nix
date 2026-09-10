@@ -1,7 +1,15 @@
-{ ... }:
+{ pkgs, lib, ... }:
+let
+  aerospace-cli = pkgs.writeShellScriptBin "aerospace" ''
+    exec /opt/homebrew/bin/aerospace "$@"
+  '';
+in
 {
+  launchd.agents.aerospace.config.Program = lib.mkForce "/Applications/AeroSpace.app/Contents/MacOS/AeroSpace";
+
   programs.aerospace = {
     enable = true;
+    package = aerospace-cli;
     launchd.enable = true;
 
     settings = {
