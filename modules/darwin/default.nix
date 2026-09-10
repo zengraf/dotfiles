@@ -1,4 +1,5 @@
 {
+  config,
   self,
   system,
   pkgs,
@@ -29,6 +30,10 @@
 
   homebrew = {
     enable = true;
+    # Without this, `brew bundle --force-cleanup` offers to untap homebrew/cask —
+    # which, under nix-homebrew's HOMEBREW_NO_INSTALL_FROM_API=1, means
+    # uninstalling every cask that came from it.
+    taps = builtins.attrNames config.nix-homebrew.taps;
     casks = [
       "1password"
       "adobe-acrobat-reader"
