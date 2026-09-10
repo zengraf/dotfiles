@@ -43,7 +43,7 @@ in
           "main"
           "secondary"
         ];
-        D = [
+        A = [
           "main"
           "secondary"
         ];
@@ -78,20 +78,16 @@ in
           ];
         }
         {
+          "if".app-id = "com.umputun.agterm";
+          run = "move-node-to-workspace A";
+        }
+        {
           "if".app-id = "company.thebrowser.Browser";
           run = "move-node-to-workspace W";
         }
         {
           "if".app-id = "app.zen-browser.zen";
           run = "move-node-to-workspace W";
-        }
-        {
-          "if".app-id = "app.tablepro.TablePlus";
-          run = "move-node-to-workspace D";
-        }
-        {
-          "if".app-id = "com.docker.docker";
-          run = "move-node-to-workspace D";
         }
         {
           "if".app-id = "com.tinyspeck.slackmacgap";
@@ -141,7 +137,7 @@ in
         ctrl-1 = "workspace W";
         ctrl-2 = "workspace C";
         ctrl-3 = "workspace T";
-        ctrl-4 = "workspace D";
+        ctrl-4 = "workspace A";
         ctrl-5 = "workspace M";
         ctrl-6 = "workspace N";
         ctrl-7 = "workspace V";
@@ -149,7 +145,7 @@ in
         ctrl-shift-1 = "move-node-to-workspace W";
         ctrl-shift-2 = "move-node-to-workspace C";
         ctrl-shift-3 = "move-node-to-workspace T";
-        ctrl-shift-4 = "move-node-to-workspace D";
+        ctrl-shift-4 = "move-node-to-workspace A";
         ctrl-shift-5 = "move-node-to-workspace M";
         ctrl-shift-6 = "move-node-to-workspace N";
         ctrl-shift-7 = "move-node-to-workspace V";
