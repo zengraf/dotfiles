@@ -12,6 +12,18 @@ let
     exec ${pkgs.nushell}/bin/nu --config ${../../../ai/agent.nu} -c "$*"
   '';
 
+  # The bundled hooks.json spawns a bare `node`, which the profile PATH lacks;
+  # its Stop entry also duplicates the ste-gate hook declared in settings.json.
+  ste = pkgs.runCommand "asd-ste100-skill" { nativeBuildInputs = [ pkgs.jq ]; } ''
+    cp -r ${inputs.ste-kit}/videos/ep01-the-cure-for-ai-slop/asd-ste100 $out
+    chmod -R u+w $out
+    jq 'del(.hooks.Stop)
+        | (.hooks[][].hooks[] | select(.command == "node")).command
+          = "${pkgs.nodejs-slim}/bin/node"' \
+      $out/hooks/hooks.json > hooks.json
+    mv hooks.json $out/hooks/hooks.json
+  '';
+
   # Upstream ships no disable-model-invocation and its description auto-triggers
   # on phrases like "be brief"; patched to manual-only.
   caveman = pkgs.runCommand "caveman-skill" { } ''
@@ -37,7 +49,7 @@ in
     ".claude/skills/humanizer".source = inputs.humanizer;
     ".claude/skills/graphify".source = "${pkgs.graphify-skill}/skills/graphify";
     ".claude/skills/grilling".source = "${inputs.mattpocock-skills}/skills/productivity/grilling";
-    ".claude/skills/asd-ste100".source = "${inputs.ste-kit}/videos/ep01-the-cure-for-ai-slop/asd-ste100";
+    ".claude/skills/asd-ste100".source = ste;
     ".claude/skills/caveman".source = caveman;
 
     "Library/Application Support/rtk/config.toml".text = ''
@@ -55,6 +67,7 @@ in
       # /model advertises no Opus 5 row for this account
       env.ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-5[1m]";
       outputStyle = "Concise";
+      tui = "fullscreen";
       mcpServers.linear = {
         type = "sse";
         url = "https://mcp.linear.app/sse";
