@@ -11,7 +11,10 @@ in
 {
   nix.package = pkgs.lixPackageSets.stable.lix;
   nix.settings = {
-    experimental-features = "nix-command flakes";
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
     substituters = [
       cache.url
       "https://cache.nixos.org"

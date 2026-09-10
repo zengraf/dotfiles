@@ -46,24 +46,21 @@ Based on the ticket description, comments, and parent context:
 - Default to a single PR — the user prefers this unless there's a strong reason to split
 - If suggesting a split, wait for the user to confirm before proceeding
 
-### Step 4 — Plan (in native Plan Mode)
+### Step 4 — Plan via grilling
 
-`EnterPlanMode` and `ExitPlanMode` are Claude Code's **native Plan Mode** tools — load their schemas via ToolSearch first (same as the Linear tools in Step 1: `select:EnterPlanMode,ExitPlanMode`). Plan Mode is **read-only**: the harness blocks every edit/write until you exit, which is why the branch is created back in Step 2 (a write) *before* this step.
-
-1. Call `EnterPlanMode` to transition into Plan Mode. This requires the user's consent to enter.
-2. Explore the codebase thoroughly inside Plan Mode — read CLAUDE.md, understand existing patterns, find related code, and confirm the scope assessment from Step 3.
-3. Write an implementation plan **to the plan file named in the Plan Mode system message**. Do NOT just print the plan as a chat message — `ExitPlanMode` reads the plan from that file. Cover:
+1. Explore the codebase first — read CLAUDE.md, understand existing patterns, find related code, and confirm the scope assessment from Step 3. Facts are yours to find; only decisions go to the user.
+2. Invoke the `grilling` skill over the implementation approach: map the design decisions as a tree and work the frontier in rounds. Per the global Grilling rule, prose carries each round's argument and `AskUserQuestion` carries the decisions.
+3. When the frontier is empty, output the consolidated implementation plan as a chat message. Cover:
    - Which files to create/modify
    - The approach for each change, with enough detail that implementation is mechanical
    - Edge cases and gotchas from CLAUDE.md that apply
    - Migration or schema changes if needed
    - What does NOT need to change (to keep scope tight)
    - If a PR split is warranted (see Step 3), outline each PR
-4. Call `ExitPlanMode` to surface the plan file for approval.
+4. Wait for the user's explicit go-ahead on the plan.
 
 ### Important
 
-- Use native Plan Mode for the plan — `EnterPlanMode`, write to the plan file, then `ExitPlanMode`. Don't substitute a plain chat message for the plan file.
-- Do NOT start implementing before the plan is approved via `ExitPlanMode`.
+- Do NOT start implementing before the user approves the plan.
 - Do NOT create a worktree — the user does that in Zed before running this command.
 - Read the project's CLAUDE.md before planning — conventions and gotchas matter.

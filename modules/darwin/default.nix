@@ -21,6 +21,7 @@
     taps = {
       "homebrew/homebrew-core" = inputs.homebrew-core;
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
+      "umputun/homebrew-apps" = inputs.homebrew-umputun;
     };
     mutableTaps = false;
   };
@@ -38,6 +39,7 @@
       "obsidian"
       "tablepro"
       "tailscale-app"
+      "umputun/apps/agterm"
       "zed"
       "zen"
     ];

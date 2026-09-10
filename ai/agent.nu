@@ -1,0 +1,11 @@
+$env.config.show_banner = false
+$env.config.use_ansi_coloring = false
+$env.config.error_style = "plain"
+$env.config.table.mode = "none"
+$env.config.table.index_mode = "auto"
+$env.config.table.show_empty = false
+$env.config.table.trim = { methodology: "truncating", truncating_suffix: "…" }
+$env.config.footer_mode = "never"
+$env.config.datetime_format.table = "%Y-%m-%d %H:%M:%S"
+$env.config.datetime_format.normal = "%Y-%m-%d %H:%M:%S"
+$env.config.display_errors.exit_code = true

@@ -187,7 +187,7 @@
   systemd.sysusers.enable = true;
 
   # Nothing on this node outlives it, so nothing needs to reach the disk.
-  services.journald.storage = "volatile";
+  services.journald.settings.Journal.Storage = "volatile";
   boot.tmp.useTmpfs = true;
 
   documentation.enable = false;

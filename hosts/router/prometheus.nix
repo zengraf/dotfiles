@@ -1,9 +1,11 @@
-{ pkgs, config, helpers, ... }:
+{ pkgs, config, lib, helpers, ... }:
 let
   inherit (helpers) formatAddress;
   unbound = config.services.unbound;
   exporters = config.services.prometheus.exporters;
-  keaAgent = config.services.kea.ctrl-agent.settings;
+  keaHttp = lib.findFirst (
+    s: s.socket-type == "http"
+  ) null config.services.kea.dhcp4.settings.control-sockets;
 in
 {
   age.secrets.unpoller-password = {
@@ -38,7 +40,7 @@ in
         enable = true;
         listenAddress = "127.0.0.1";
         port = 9547;
-        targets = [ "http://${formatAddress keaAgent.http-host keaAgent.http-port}" ];
+        targets = [ "http://${formatAddress keaHttp.socket-address keaHttp.socket-port}" ];
       };
 
       blackbox = {

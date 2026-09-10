@@ -11,6 +11,7 @@
     ../../modules/home/aerospace.nix
     ../../modules/home/zed.nix
     ../../modules/home/ghostty.nix
+    ../../modules/home/agterm.nix
   ];
 
   home.packages = with pkgs; [

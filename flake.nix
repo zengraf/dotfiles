@@ -20,6 +20,10 @@
       url = "github:homebrew/homebrew-cask";
       flake = false;
     };
+    homebrew-umputun = {
+      url = "github:umputun/homebrew-apps";
+      flake = false;
+    };
 
     humanizer = {
       url = "github:blader/humanizer";
@@ -28,6 +32,16 @@
 
     mattpocock-skills = {
       url = "github:mattpocock/skills";
+      flake = false;
+    };
+
+    ste-kit = {
+      url = "github:woosal1337/blog";
+      flake = false;
+    };
+
+    caveman = {
+      url = "github:JuliusBrussee/caveman";
       flake = false;
     };
 
