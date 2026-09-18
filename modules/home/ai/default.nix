@@ -49,6 +49,10 @@ in
     ".claude/skills/humanizer".source = inputs.humanizer;
     ".claude/skills/graphify".source = "${pkgs.graphify-skill}/skills/graphify";
     ".claude/skills/grilling".source = "${inputs.mattpocock-skills}/skills/productivity/grilling";
+    ".claude/skills/wayfinder".source = "${inputs.mattpocock-skills}/skills/engineering/wayfinder";
+    ".claude/skills/domain-modeling".source = "${inputs.mattpocock-skills}/skills/engineering/domain-modeling";
+    ".claude/skills/research".source = "${inputs.mattpocock-skills}/skills/engineering/research";
+    ".claude/skills/prototype".source = "${inputs.mattpocock-skills}/skills/engineering/prototype";
     ".claude/skills/asd-ste100".source = ste;
     ".claude/skills/caveman".source = caveman;
 
