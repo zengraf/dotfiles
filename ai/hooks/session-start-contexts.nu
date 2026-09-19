@@ -10,12 +10,6 @@ mkdir $dir
 
 let gatedir = ($dir | path join ".gates")
 mkdir $gatedir
-try {
-  ls $gatedir
-  | where type == file and $it.modified < ((date now) - 7day)
-  | each {|f| rm --force $f.name }
-  | ignore
-}
 
 let contexts = (
   ls $dir

@@ -65,11 +65,12 @@ in
     }
     // resolver {
       name = "biome";
-      # The daemon's log filter is a hardcoded DEBUG constant that --log-level
-      # cannot reach (biomejs/biome#7538), and a runaway scan writes GB/hour.
-      # The path must be a real directory — /dev/null makes biome exit with
-      # "Error reading the log directory/files: Not a directory".
+      # Before 2.5.12 the daemon ignores the log level and logs at DEBUG
+      # (biomejs/biome#11562), and a runaway scan writes GB/hour. The path must
+      # be a real directory — /dev/null makes biome exit with "Error reading the
+      # log directory/files: Not a directory".
       env.BIOME_LOG_PATH = "\${TMPDIR:-/tmp}/zed-biome-logs";
+      env.BIOME_LOG_LEVEL = "none";
       project = [
         {
           path = "node_modules/@biomejs/cli-${platform}/biome";

@@ -44,26 +44,6 @@ in
         tsgo = false;
       };
 
-      agent_servers = {
-        claude-acp = {
-          type = "custom";
-          command = "${pkgs.claude-agent-acp}/bin/claude-agent-acp";
-          args = [ ];
-          env = {
-            CLAUDE_CODE_EXECUTABLE = "${pkgs.claude-code}/bin/claude";
-          };
-          default_config_options = {
-            model = "opus";
-            effort = "high";
-            fast = "off";
-            mode = "auto";
-          };
-          favorite_config_option_values = {
-            effort = [ "max" ];
-          };
-        };
-      };
-
       edit_predictions = {
         provider = "copilot";
         mode = "subtle";
@@ -75,13 +55,11 @@ in
         };
       };
 
+      # Agentic flows run in agterm. Only the panel and its threads sidebar go:
+      # disable_ai would also switch off Copilot edit predictions.
       agent = {
-        default_profile = "ask";
-        dock = "left";
-        default_model = {
-          provider = "copilot_chat";
-          model = "gpt-4o";
-        };
+        enabled = false;
+        button = false;
       };
 
       autosave = "on_focus_change";
@@ -96,11 +74,14 @@ in
       };
 
       diff_view_style = "split";
-      project_panel.dock = "right";
-      outline_panel.dock = "right";
-      collaboration_panel.dock = "right";
+      # Zed 1.20 docks these right by default (the agentic layout). Explicit
+      # because mutableUserSettings merges into the existing settings.json, so a
+      # key removed here keeps its old value there.
+      project_panel.dock = "left";
+      outline_panel.dock = "left";
+      collaboration_panel.dock = "left";
       git_panel = {
-        dock = "right";
+        dock = "left";
         tree_view = false;
       };
 
