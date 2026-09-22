@@ -68,8 +68,6 @@ in
         "Edit(~/.local/share/claude-contexts/**)"
         "Edit(~/.local/share/claude-contexts/.gates/**)"
       ];
-      # /model advertises no Opus 5 row for this account
-      env.ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-5[1m]";
       outputStyle = "Concise";
       tui = "fullscreen";
       mcpServers.linear = {
