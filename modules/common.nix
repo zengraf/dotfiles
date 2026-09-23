@@ -36,6 +36,7 @@ in
 
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
+    (import ../overlays/claude-code.nix)
     (import ../overlays/graphify.nix)
     (import ../overlays/lix-packages.nix)
     (import ../overlays/openconnect.nix)
