@@ -15,7 +15,19 @@
     enable = true;
     nix-direnv.enable = true;
     stdlib = ''
+      # Zed and other FSEvents consumers watch the whole worktree and cannot
+      # exclude a subtree. Postgres writes under .devenv/state overflow the
+      # event queue, so the state lives outside the tree behind a symlink.
+      # A real directory is left alone: it may hold a live cluster.
       use_devenv() {
+        local state_home="''${XDG_STATE_HOME:-$HOME/.local/state}/devenv"
+        local state="$state_home/$(basename "$PWD")-$(printf %s "$PWD" | ${pkgs.coreutils}/bin/sha256sum | cut -c1-8)"
+        if [[ -d .devenv/state && ! -L .devenv/state ]]; then
+          log_status "devenv: .devenv/state is a real directory, not moved to $state"
+        else
+          mkdir -p "$state" .devenv
+          [[ -L .devenv/state ]] || ln -s "$state" .devenv/state
+        fi
         eval "$(${pkgs.devenv}/bin/devenv direnvrc)"
         use_devenv "$@"
       }
