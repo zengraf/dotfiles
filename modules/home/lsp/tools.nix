@@ -71,6 +71,15 @@ in
       # log directory/files: Not a directory".
       env.BIOME_LOG_PATH = "\${TMPDIR:-/tmp}/zed-biome-logs";
       env.BIOME_LOG_LEVEL = "none";
+      # The default FSEvents watcher deadlocks: biome feeds events through a
+      # bounded(128) channel, and notify 8.2.0's FsEventWatcher::stop() (run on
+      # every watch/unwatch) spins on CFRunLoopIsWaiting() while the FSEvents
+      # callback blocks on that full channel. One core at 100% until killed.
+      # notify-rs/notify#1013 (2026-10-03) fixes it, unreleased; biome 2.5.15
+      # still pins notify 8.2.0. Watches are per-folder, non-recursive, so a
+      # 10 s poll stats ~35k entries per pass.
+      env.BIOME_WATCHER_KIND = "polling";
+      env.BIOME_WATCHER_POLLING_INTERVAL = "10000";
       project = [
         {
           path = "node_modules/@biomejs/cli-${platform}/biome";
