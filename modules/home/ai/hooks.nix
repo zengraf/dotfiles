@@ -1,21 +1,6 @@
 { pkgs, inputs }:
 let
-  # baked in via readFile, so editing a hook script needs a home-manager switch to take effect
-  mkHook =
-    name: script:
-    pkgs.writeTextFile {
-      inherit name;
-      executable = true;
-      text = ''
-        #!${pkgs.nushell}/bin/nu --no-config-file
-        ${builtins.readFile script}
-      '';
-    };
-
-  sessionStartContexts = mkHook "claude-session-start-contexts" ../../../ai/hooks/session-start-contexts.nu;
-  preToolUseContexts = mkHook "claude-pre-tool-use-contexts" ../../../ai/hooks/pre-tool-use-contexts.nu;
-  preToolUseGitCommit = mkHook "claude-pre-tool-use-git-commit" ../../../ai/hooks/pre-tool-use-git-commit.nu;
-  postToolUseComments = mkHook "claude-post-tool-use-comments" ../../../ai/hooks/post-tool-use-comments.nu;
+  claudeHook = "${pkgs.claude-hooks}/bin/claude-hook";
 
   # ste-gate falls back to ~/.claude/skills/asd-ste100/scripts/ste-lint.py (our
   # symlink) and writes its state under ~/.claude/ste-gate/, so running it from
@@ -35,7 +20,7 @@ in
       hooks = [
         {
           type = "command";
-          command = "${sessionStartContexts}";
+          command = "${claudeHook} session-start";
         }
       ];
     }
@@ -58,17 +43,13 @@ in
       hooks = [
         {
           type = "command";
-          command = "${preToolUseContexts}";
+          command = "${claudeHook} pre-tool-use";
         }
       ];
     }
     {
       matcher = "Bash";
       hooks = [
-        {
-          type = "command";
-          command = "${preToolUseGitCommit}";
-        }
         {
           type = "command";
           command = "${pkgs.rtk}/bin/rtk hook claude";
@@ -83,7 +64,7 @@ in
       hooks = [
         {
           type = "command";
-          command = "${postToolUseComments}";
+          command = "${claudeHook} post-tool-use";
         }
       ];
     }
