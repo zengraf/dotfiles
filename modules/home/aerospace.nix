@@ -1,7 +1,8 @@
 { pkgs, lib, ... }:
 let
-  aerospace-cli = pkgs.writeShellScriptBin "aerospace" ''
-    exec /opt/homebrew/bin/aerospace "$@"
+  aerospace-cli = pkgs.runCommandLocal "aerospace" { meta.mainProgram = "aerospace"; } ''
+    mkdir -p $out/bin
+    ln -s /opt/homebrew/bin/aerospace $out/bin/aerospace
   '';
 in
 {
