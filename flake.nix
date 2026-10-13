@@ -141,6 +141,23 @@
         system = "x86_64-linux";
         modules = [ ./hosts/nomad ];
       };
+
+      local =
+        system:
+        let
+          pkgs = pkgsFor system;
+          all = import ./pkgs { inherit pkgs self; };
+          available = nixpkgs.lib.filterAttrs (_: nixpkgs.lib.meta.availableOn pkgs.stdenv.hostPlatform);
+        in
+        {
+          packages = available all.packages;
+          checks = available all.packages // all.checks;
+        };
+      systems = [
+        "x86_64-linux"
+        "aarch64-darwin"
+      ];
+      eachSystem = attr: nixpkgs.lib.genAttrs systems (system: (local system).${attr});
     in
     {
       darwinConfigurations = {
@@ -156,15 +173,10 @@
         nomad = nomadSystem;
       };
 
-      packages = {
-        x86_64-linux = {
-          nomad-image = nomadSystem.config.system.build.nomadImage;
-          nomad = (pkgsFor "x86_64-linux").callPackage ./pkgs/nomad { inherit self; };
-        };
-        aarch64-darwin = {
-          nomad = (pkgsFor "aarch64-darwin").callPackage ./pkgs/nomad { inherit self; };
-          cache-push = (pkgsFor "aarch64-darwin").callPackage ./pkgs/cache-push { };
-        };
+      packages = nixpkgs.lib.recursiveUpdate (eachSystem "packages") {
+        x86_64-linux.nomad-image = nomadSystem.config.system.build.nomadImage;
       };
+
+      checks = eachSystem "checks";
     };
 }

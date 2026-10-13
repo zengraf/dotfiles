@@ -1,4 +1,5 @@
 {
+  self,
   pkgs,
   lib,
   hostname,
@@ -41,6 +42,13 @@ in
     (import ../overlays/lix-packages.nix)
     (import ../overlays/openconnect.nix)
     (import ../overlays/openconnect-sso.nix)
+    (
+      final: _:
+      (import ../pkgs {
+        pkgs = final;
+        inherit self;
+      }).packages
+    )
   ];
 
   networking.hostName = hostname;
