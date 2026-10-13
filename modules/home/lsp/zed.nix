@@ -21,14 +21,15 @@ let
   # kind, and probes npm unconditionally on every launch — so it is the one
   # subsystem that cannot be pinned. Everything else fails loudly instead of
   # quietly downloading.
-  npmPolicy = pkgs.writeShellScript "npm-copilot-only" ''
-    for arg in "$@"; do
-      case "$arg" in
-        *@github/copilot-language-server*) exec ${pkgs.nodejs}/bin/npm "$@" ;;
-      esac
-    done
-    echo "npm denied: $* — pin this server with lsp.<id>.binary.path" >&2
-    exit 1
+  npmSpec = pkgs.writeText "npm-policy.json" (
+    builtins.toJSON {
+      npm = "${pkgs.nodejs}/bin/npm";
+      allow = [ "@github/copilot-language-server" ];
+    }
+  );
+  # node.npm_path takes a path and no arguments.
+  npmPolicy = pkgs.writeShellScript "npm-policy" ''
+    exec ${pkgs.lsp-resolve}/bin/npm-policy ${npmSpec} "$@"
   '';
 
   biomeFormat.formatter.language_server.name = "biome";

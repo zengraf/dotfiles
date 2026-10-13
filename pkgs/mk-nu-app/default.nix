@@ -8,22 +8,22 @@
   version ? "0.1.0",
   src,
   bins,
-  # placeholder name -> store path; every @name@ in src becomes the path
   substitutions ? { },
-  # std assert scripts, relative to src; they run from the source root
   tests ? [ ],
   meta ? { },
 }:
 let
   nu = lib.getExe nushell;
   share = "$out/share/${pname}";
-  # Nu resolves `use` against the path it was given, which is the bin/ symlink.
+  # A relative `use` resolves against the invoked path, the bin/ symlink, not
+  # against its target next to the module.
   flags = "--no-config-file --no-std-lib --include-path ${share}";
 in
 stdenvNoCC.mkDerivation {
   inherit pname version src;
 
-  # patchShebangs rewrites /usr/bin/env to the store coreutils env.
+  # patchShebangs keeps `-S` but swaps /usr/bin/env for the store coreutils env,
+  # which pulls coreutils into every closure. /usr/bin/env exists on each host.
   dontPatchShebangs = true;
 
   buildPhase = ''
@@ -52,7 +52,6 @@ stdenvNoCC.mkDerivation {
   doCheck = true;
   checkPhase = ''
     runHook preCheck
-    export HOME=$TMPDIR
     find . -name '*.nu' -print0 | while IFS= read -r -d "" f; do
       ${nu} --no-config-file -c "if not (nu-check --debug '$f') { exit 1 }"
     done
@@ -82,7 +81,7 @@ stdenvNoCC.mkDerivation {
   installCheckPhase = ''
     runHook preInstallCheck
     ${lib.concatMapStrings (bin: ''
-      (cd / && ${nu} ${flags} $out/bin/${lib.escapeShellArg bin} --help > /dev/null)
+      (cd / && ${nu} ${flags} -c "if not (nu-check --debug '$out/bin/${bin}') { exit 1 }")
     '') (lib.attrNames bins)}
     runHook postInstallCheck
   '';

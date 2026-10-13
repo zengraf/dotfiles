@@ -1,7 +1,5 @@
 { pkgs }:
 let
-  inherit (pkgs) lib;
-
   # Both biome and TypeScript 7 publish their native binaries under <os>-<arch>.
   platform =
     let
@@ -9,48 +7,10 @@ let
     in
     "${if host.isDarwin then "darwin" else "linux"}-${if host.isAarch64 then "arm64" else "x64"}";
 
-  # Zed joins a relative binary.path onto the worktree root exactly once, and the
-  # biome extension only reads package.json there — neither finds a project
-  # install when the opened root is a subdirectory of the package. Walking
-  # ancestors from $PWD does, and Zed spawns language servers with cwd set to the
-  # worktree root.
-  resolver =
-    {
-      name,
-      project,
-      fallback ? null,
-      env ? { },
-    }:
-    let
-      giveUp =
-        if fallback == null then
-          ''echo "${name}: no project install in any ancestor of $PWD" >&2; exit 1''
-        else
-          ''exec ${fallback.command} ${lib.escapeShellArgs fallback.args} "$@"'';
-      script = lib.concatStringsSep "\n" (
-        map (k: ''export ${k}="${env.${k}}"'') (builtins.attrNames env)
-        ++ [
-          "d=$PWD"
-          ''while [ "$d" != / ]; do''
-        ]
-        ++ map (
-          p:
-          ''if [ -x "$d/${p.path}" ]; then exec "$d/${p.path}" ${
-            lib.escapeShellArgs (p.args or [ ])
-          } "$@"; fi''
-        ) project
-        ++ [
-          ''d=$(dirname "$d")''
-          "done"
-          giveUp
-        ]
-      );
-    in
-    {
-      command = toString (pkgs.writeShellScript "lsp-${name}" script);
-      # The resolver bakes each candidate's own arguments, so consumers pass none.
-      args = [ ];
-    };
+  resolved = spec: {
+    command = "${pkgs.lsp-resolve}/bin/lsp-resolve";
+    args = [ (toString (pkgs.writeText "lsp-${spec.name}.json" (builtins.toJSON spec))) ];
+  };
 
   direct = command: args: { inherit command args; };
 in
@@ -63,13 +23,13 @@ in
       zedId = "biome";
       zed.settings.require_config_file = true;
     }
-    // resolver {
+    // resolved {
       name = "biome";
       # Before 2.5.12 the daemon ignores the log level and logs at DEBUG
       # (biomejs/biome#11562), and a runaway scan writes GB/hour. The path must
       # be a real directory — /dev/null makes biome exit with "Error reading the
       # log directory/files: Not a directory".
-      env.BIOME_LOG_PATH = "\${TMPDIR:-/tmp}/zed-biome-logs";
+      env.BIOME_LOG_PATH = "~/.cache/zed-biome-logs";
       env.BIOME_LOG_LEVEL = "none";
       # The default FSEvents watcher deadlocks: biome feeds events through a
       # bounded(128) channel, and notify 8.2.0's FsEventWatcher::stop() (run on
@@ -111,7 +71,7 @@ in
         };
       };
     }
-    // resolver {
+    // resolved {
       name = "typescript";
       # Only the native binary is probed: node_modules/.bin/tsc may be a TS 5
       # shim, which has no --lsp and would fail where vtsls would have worked.
@@ -150,7 +110,7 @@ in
         settings.basedpyright.analysis.typeCheckingMode = "standard";
       };
     }
-    // resolver {
+    // resolved {
       name = "basedpyright";
       project = [
         {
@@ -167,7 +127,7 @@ in
     ruff = {
       zedId = "ruff";
     }
-    // resolver {
+    // resolved {
       name = "ruff";
       project = [
         {
@@ -190,7 +150,13 @@ in
         extensionToLanguage.".rs" = "rust";
       };
     }
-    // direct "${pkgs.rust-analyzer}/bin/rust-analyzer" [ ];
+    # The project's own build comes first: its proc-macro server has to match
+    # the rustc that compiled the macros.
+    // resolved {
+      name = "rust-analyzer";
+      devenv = true;
+      fallback.command = "${pkgs.rust-analyzer}/bin/rust-analyzer";
+    };
 
     nil = {
       zedId = "nil";
