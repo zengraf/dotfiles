@@ -3,8 +3,8 @@ let
   inherit (helpers) formatAddress;
   unbound = config.services.unbound;
   exporters = config.services.prometheus.exporters;
-  keaHttp = lib.findFirst (
-    s: s.socket-type == "http"
+  keaUnix = lib.findFirst (
+    s: s.socket-type == "unix"
   ) null config.services.kea.dhcp4.settings.control-sockets;
 in
 {
@@ -40,7 +40,7 @@ in
         enable = true;
         listenAddress = "127.0.0.1";
         port = 9547;
-        targets = [ "http://${formatAddress keaHttp.socket-address keaHttp.socket-port}" ];
+        targets = [ keaUnix.socket-name ];
       };
 
       blackbox = {

@@ -10,11 +10,6 @@
           socket-type = "unix";
           socket-name = "/run/kea/kea-dhcp4.socket";
         }
-        {
-          socket-type = "http";
-          socket-address = "127.0.0.1";
-          socket-port = 14461;
-        }
       ];
       lease-database = {
         type = "memfile";
