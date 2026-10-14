@@ -68,6 +68,9 @@ in
         "Edit(~/.local/share/claude-contexts/**)"
         "Edit(~/.local/share/claude-contexts/.gates/**)"
       ];
+      # `autoCompactEnabled` lives in ~/.claude.json, which Claude Code rewrites at
+      # runtime, so the env var is the declarative switch.
+      env.DISABLE_AUTO_COMPACT = "1";
       outputStyle = "Concise";
       tui = "fullscreen";
       mcpServers.linear = {
