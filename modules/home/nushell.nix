@@ -15,7 +15,9 @@
       source ${pkgs.nu_scripts}/share/nu_scripts/aliases/git/git-aliases.nu
     '';
     extraEnv = ''
+      # On NixOS, sw/bin also holds sudo without the setuid bit. The wrapper must come first.
       $env.PATH = ($env.PATH | prepend [
+        "/run/wrappers/bin"
         ($env.HOME | path join ".nix-profile/bin")
         $"/etc/profiles/per-user/($env.USER)/bin"
         "/run/current-system/sw/bin"
