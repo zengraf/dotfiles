@@ -41,6 +41,21 @@
     memory = 12228;
   };
 
+  # `soak` is mandatory, so the daemon sends the router only the deadline soak. The host
+  # key is inline, because the daemon runs as root and reads no user known_hosts.
+  nix.buildMachines = [
+    {
+      hostName = "router.zengraf.arpa";
+      sshUser = username;
+      sshKey = "/Users/${username}/.ssh/deadline-soak-builder";
+      protocol = "ssh-ng";
+      systems = [ "x86_64-linux" ];
+      maxJobs = 1;
+      mandatoryFeatures = [ "soak" ];
+      publicHostKey = "c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUpEc3pNY0JmakVISHdHdmNvUDRzYkRucXAzbjg5NWxCKzRUbVdwWitZeVcK";
+    }
+  ];
+
   home-manager.users.${username} = ./home.nix;
 
   system.stateVersion = 6;

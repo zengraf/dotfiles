@@ -39,9 +39,13 @@
     isNormalUser = true;
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAUexCVcDyovTWhCWmOpSwaeXS5MnfPHhJgVaaEXWJSp"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAUexCVcDyovTWhCWmOpSwaeXS5MnfPHhJgVaaEXWJSp personal"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICjfMRRTMBlBLaBMncx/cZythux8WsVgH2aM+Sl1HKNO nix-daemon on satellite"
     ];
   };
+
+  # The builder line on the Mac names `soak`, but the daemon here checks its own features.
+  nix.settings.system-features = [ "soak" ];
 
   security.sudo.wheelNeedsPassword = false;
 
