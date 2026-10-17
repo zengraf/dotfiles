@@ -181,6 +181,11 @@ in
     }
     // direct "${pkgs.nushell}/bin/nu" [ "--lsp" ];
 
+    slint = {
+      zedId = "slint";
+    }
+    // direct "${pkgs.slint-lsp}/bin/slint-lsp" [ ];
+
     # No project-local form exists for these: nothing installs them into
     # node_modules, so there is nothing to probe for.
     tailwindcss = {

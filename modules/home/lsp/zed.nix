@@ -128,6 +128,9 @@ in
     Rust = {
       language_servers = [ "rust-analyzer" ];
     };
+    Slint = {
+      language_servers = [ "slint" ];
+    };
     Nix = {
       tab_size = 2;
       language_servers = [

@@ -23,6 +23,7 @@ in
       "nu"
       "prisma"
       "scss"
+      "slint"
       "sql"
       "svelte"
       "terraform"
