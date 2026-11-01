@@ -46,6 +46,7 @@
       "obsidian"
       "tablepro"
       "tailscale-app"
+      "thebrowsercompany-dia"
       "umputun/apps/agterm"
       "zed"
       "zen"
