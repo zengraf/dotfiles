@@ -28,8 +28,8 @@
       url = "github:nikitabobko/homebrew-tap";
       flake = false;
     };
-    homebrew-yetanotherbrowser = {
-      url = "github:yetanotherbrowser/homebrew-tap";
+    homebrew-driceroland = {
+      url = "github:driceroland/homebrew-tap";
       flake = false;
     };
 
