@@ -114,22 +114,6 @@
         "type": "github"
       }
     },
-    "homebrew-driceroland": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1793618289,
-        "narHash": "sha256-G5/VCSD9/C4sgXfuJFJ0EiEWCUI0pAgL1JAsQ3uWF0k=",
-        "owner": "driceroland",
-        "repo": "homebrew-tap",
-        "rev": "5b03a90f5f7bf42f95b11bad3c048943ba078722",
-        "type": "github"
-      },
-      "original": {
-        "owner": "driceroland",
-        "repo": "homebrew-tap",
-        "type": "github"
-      }
-    },
     "homebrew-nikitabobko": {
       "flake": false,
       "locked": {
@@ -307,7 +291,6 @@
         "home-manager": "home-manager",
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",
-        "homebrew-driceroland": "homebrew-driceroland",
         "homebrew-nikitabobko": "homebrew-nikitabobko",
         "homebrew-umputun": "homebrew-umputun",
         "humanizer": "humanizer",

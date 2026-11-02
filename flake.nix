@@ -28,10 +28,6 @@
       url = "github:nikitabobko/homebrew-tap";
       flake = false;
     };
-    homebrew-driceroland = {
-      url = "github:driceroland/homebrew-tap";
-      flake = false;
-    };
 
     humanizer = {
       url = "github:blader/humanizer";

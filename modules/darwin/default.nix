@@ -24,7 +24,6 @@
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
       "umputun/homebrew-apps" = inputs.homebrew-umputun;
       "nikitabobko/homebrew-tap" = inputs.homebrew-nikitabobko;
-      "driceroland/homebrew-tap" = inputs.homebrew-driceroland;
     };
     mutableTaps = false;
   };
@@ -39,6 +38,7 @@
       "1password"
       "adobe-acrobat-reader"
       "arc"
+      "crest-browser"
       "daisydisk"
       "ghostty"
       "google-drive"
@@ -48,7 +48,6 @@
       "tablepro"
       "tailscale-app"
       "umputun/apps/agterm"
-      "driceroland/tap/search"
       "zed"
       "zen"
     ];
