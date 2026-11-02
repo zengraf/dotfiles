@@ -146,6 +146,22 @@
         "type": "github"
       }
     },
+    "homebrew-yetanotherbrowser": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791580123,
+        "narHash": "sha256-3rvB/m/E+KrBGc3EOW6AVCNOjAs6C9jIio/kVFGBYfk=",
+        "owner": "yetanotherbrowser",
+        "repo": "homebrew-tap",
+        "rev": "a85ec07677d19f3214c59e7d136b099e8a57014a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "yetanotherbrowser",
+        "repo": "homebrew-tap",
+        "type": "github"
+      }
+    },
     "humanizer": {
       "flake": false,
       "locked": {
@@ -293,6 +309,7 @@
         "homebrew-core": "homebrew-core",
         "homebrew-nikitabobko": "homebrew-nikitabobko",
         "homebrew-umputun": "homebrew-umputun",
+        "homebrew-yetanotherbrowser": "homebrew-yetanotherbrowser",
         "humanizer": "humanizer",
         "mattpocock-skills": "mattpocock-skills",
         "nix-darwin": "nix-darwin",
