@@ -24,6 +24,7 @@
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
       "umputun/homebrew-apps" = inputs.homebrew-umputun;
       "nikitabobko/homebrew-tap" = inputs.homebrew-nikitabobko;
+      "yetanotherbrowser/homebrew-tap" = inputs.homebrew-yetanotherbrowser;
     };
     mutableTaps = false;
   };
@@ -46,8 +47,8 @@
       "obsidian"
       "tablepro"
       "tailscale-app"
-      "thebrowsercompany-dia"
       "umputun/apps/agterm"
+      "yetanotherbrowser/tap/yab"
       "zed"
       "zen"
     ];

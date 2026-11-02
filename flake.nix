@@ -28,6 +28,10 @@
       url = "github:nikitabobko/homebrew-tap";
       flake = false;
     };
+    homebrew-yetanotherbrowser = {
+      url = "github:yetanotherbrowser/homebrew-tap";
+      flake = false;
+    };
 
     humanizer = {
       url = "github:blader/humanizer";
