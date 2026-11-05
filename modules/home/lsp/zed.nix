@@ -131,6 +131,16 @@ in
     Slint = {
       language_servers = [ "slint" ];
     };
+    # The extension lists prettier-plugin-svelte, so with prettier allowed Zed
+    # npm-installs a default prettier. The server bundles its own.
+    Svelte = {
+      formatter = "language_server";
+      prettier.allowed = false;
+      language_servers = [ "svelte-language-server" ];
+    };
+    Go = {
+      enable_language_server = false;
+    };
     Nix = {
       tab_size = 2;
       language_servers = [

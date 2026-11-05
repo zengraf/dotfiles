@@ -10,8 +10,10 @@ let
   # agterm's Help ▸ Install Agent Status Hooks does an atomic write to
   # ~/.claude/settings.json, replacing the store symlink — so its registrations
   # are mirrored here, pointing at the scripts bundled with the app. The script
-  # exits silently when AGTERM_SESSION_ID is unset (any other terminal).
-  agtermStatus = "/Applications/agterm.app/Contents/Resources/agent-status/agterm-claude-status.sh";
+  # exits silently when AGTERM_SESSION_ID is unset (any other terminal). The
+  # installer bakes the agtermctl path into its copy. The bundled original
+  # falls back to `agtermctl` on PATH, which only Homebrew provides.
+  agtermStatus = "AGTERMCTL=/Applications/agterm.app/Contents/MacOS/agtermctl /Applications/agterm.app/Contents/Resources/agent-status/agterm-claude-status.sh";
 in
 {
   SessionStart = [

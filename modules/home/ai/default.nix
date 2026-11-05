@@ -12,16 +12,24 @@ let
     exec ${pkgs.nushell}/bin/nu --config ${../../../ai/agent.nu} -c "$*"
   '';
 
-  # The bundled hooks.json spawns a bare `node`, which the profile PATH lacks;
-  # its Stop entry also duplicates the ste-gate hook declared in settings.json.
+  # The bundled hooks.json, the lint command the hooks tell the agent to run,
+  # and SKILL.md all spawn a bare `node`, which the profile PATH lacks. The
+  # runner's PATH lookup of `python3` lands on the /usr/bin CLT stub wherever
+  # the profile is missing from PATH. The Stop entry duplicates the ste-gate
+  # hook declared in settings.json.
+  node = "${pkgs.nodejs-slim}/bin/node";
   ste = pkgs.runCommand "asd-ste100-skill" { nativeBuildInputs = [ pkgs.jq ]; } ''
     cp -r ${inputs.ste-kit}/videos/ep01-the-cure-for-ai-slop/asd-ste100 $out
     chmod -R u+w $out
     jq 'del(.hooks.Stop)
         | (.hooks[][].hooks[] | select(.command == "node")).command
-          = "${pkgs.nodejs-slim}/bin/node"' \
+          = "${node}"' \
       $out/hooks/hooks.json > hooks.json
     mv hooks.json $out/hooks/hooks.json
+    substituteInPlace $out/hooks/ste-inject.py --replace-fail 'node "{runner}"' '${node} "{runner}"'
+    substituteInPlace $out/hooks/ste-refresh.py --replace-fail 'first: node ' 'first: ${node} '
+    substituteInPlace $out/SKILL.md --replace-fail 'node hooks/' '${node} hooks/'
+    substituteInPlace $out/hooks/run-python.cjs --replace-fail 'command: "python3"' 'command: "${pkgs.python3}/bin/python3"'
   '';
 
   # Upstream ships no disable-model-invocation and its description auto-triggers

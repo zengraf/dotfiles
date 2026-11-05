@@ -186,6 +186,11 @@ in
     }
     // direct "${pkgs.slint-lsp}/bin/slint-lsp" [ ];
 
+    svelte = {
+      zedId = "svelte-language-server";
+    }
+    // direct "${pkgs.svelte-language-server}/bin/svelteserver" [ "--stdio" ];
+
     # No project-local form exists for these: nothing installs them into
     # node_modules, so there is nothing to probe for.
     tailwindcss = {

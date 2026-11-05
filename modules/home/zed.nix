@@ -1,35 +1,52 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   lspZed = import ./lsp/zed.nix { inherit pkgs; };
+
+  extensions = [
+    "biome"
+    "dart"
+    "dockerfile"
+    "fleet-themes"
+    "git-firefly"
+    "html"
+    "kotlin"
+    "make"
+    "nix"
+    "nu"
+    "prisma"
+    "ruby"
+    "scss"
+    "slint"
+    "sql"
+    "svelte"
+    "terraform"
+    "toml"
+    "tsgo"
+  ];
 in
 {
   # nil resolves nixfmt off PATH; the servers themselves are absolute store
   # paths in lsp/tools.nix and need no entry here.
   home.packages = [ pkgs.nixfmt ];
 
+  # auto_install_extensions only adds, so an extension dropped from the list
+  # stays installed.
+  home.activation.zedPrune = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    z="$HOME/Library/Application Support/Zed"
+    for e in "$z"/extensions/installed/*; do
+      [ -e "$e" ] || continue
+      case " ${lib.concatStringsSep " " extensions} " in
+        *" $(basename "$e") "*) ;;
+        *) run rm -rf "$e" "$z/extensions/work/$(basename "$e")" ;;
+      esac
+    done
+    run rm -rf "$z/languages" "$z/prettier" "$z/external_agents" "$z"/node/node-v*
+  '';
+
   programs.zed-editor = {
     enable = true;
 
-    extensions = [
-      "biome"
-      "dart"
-      "dockerfile"
-      "fleet-themes"
-      "git-firefly"
-      "html"
-      "kotlin"
-      "make"
-      "nix"
-      "nu"
-      "prisma"
-      "scss"
-      "slint"
-      "sql"
-      "svelte"
-      "terraform"
-      "toml"
-      "tsgo"
-    ];
+    inherit extensions;
 
     userSettings = {
       load_direnv = "direct";
