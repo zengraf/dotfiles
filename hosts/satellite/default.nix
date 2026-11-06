@@ -21,6 +21,7 @@
     masApps = {
       "Xcode" = 497799835;
       "Transporter" = 1450874784;
+      "Windows App" = 1295203466;
     };
   };
 
