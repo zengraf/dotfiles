@@ -44,6 +44,7 @@ in
   home.packages = [
     pkgs.claude-code
     pkgs.graphify
+    pkgs.ipbox
     pkgs.ripgrep
     pkgs.rtk
     nua
@@ -54,6 +55,7 @@ in
     ".claude/skills/deep-review".source = ../../../ai/skills/deep-review;
     ".claude/skills/implement".source = ../../../ai/skills/implement;
     ".claude/skills/ctx".source = ../../../ai/skills/ctx;
+    ".claude/skills/ipbox".source = ../../../ai/skills/ipbox;
     ".claude/skills/humanizer".source = inputs.humanizer;
     ".claude/skills/graphify".source = "${pkgs.graphify-skill}/skills/graphify";
     ".claude/skills/grilling".source = "${inputs.mattpocock-skills}/skills/productivity/grilling";

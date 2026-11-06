@@ -1,0 +1,14 @@
+# One table per contract. The key is the ip_id in the logs. The skill refuses a
+# key with no table. Copy to ~/ipbox/ipbox.toml and fill in the facts.
+
+[client.railsware]
+client = "Railsware Products Studio LLC"
+# GitHub orgs where the work for this contract lands. The end client's org
+# counts too, as long as the invoice goes to `client`.
+orgs = ["markerlearning", "railsware"]
+end_client = "Marker Learning"
+contract_date = "2024-01-01"
+# Clause of the contract that transfers the copyright to the client.
+rights_clause = "§ 7 ust. 1"
+# Name of the qualified IP as the ewidencja identifies it.
+ip_name = "Oprogramowanie dla Railsware (autorskie prawo do programu komputerowego)"

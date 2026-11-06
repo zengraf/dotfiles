@@ -9,6 +9,7 @@ in
   packages = {
     cache-push = callPackage ./cache-push { };
     claude-hooks = callPackage ./claude-hooks { };
+    ipbox = callPackage ./ipbox { };
     lsp-resolve = callPackage ./lsp-resolve { };
     # Shadows nixpkgs' HashiCorp Nomad inside the overlay.
     nomad = callPackage ./nomad { };
