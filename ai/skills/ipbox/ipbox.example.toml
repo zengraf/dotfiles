@@ -1,5 +1,5 @@
 # One table per contract. The key is the ip_id in the logs. The skill refuses a
-# key with no table. Copy to ~/ipbox/ipbox.toml and fill in the facts.
+# key with no table. Copy to ~/Documents/ipbox/ipbox.toml and fill in the facts.
 
 [client.railsware]
 client = "Railsware Products Studio LLC"

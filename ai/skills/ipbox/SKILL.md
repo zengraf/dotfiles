@@ -25,9 +25,9 @@ Collect one month of merged PRs as evidence of creative work for the Polish IP B
 
 ## Paths
 
-- Evidence repo: `~/ipbox`. Stop if it is not a git repo.
-- Config: `~/ipbox/ipbox.toml`. Stop if `[client.<client>]` is missing. See `ipbox.example.toml` next to this file.
-- Month dir: `~/ipbox/<YYYY-MM>/`.
+- Evidence repo: `~/Documents/ipbox`. Stop if it is not a git repo.
+- Config: `~/Documents/ipbox/ipbox.toml`. Stop if `[client.<client>]` is missing. See `ipbox.example.toml` next to this file.
+- Month dir: `~/Documents/ipbox/<YYYY-MM>/`.
 
 ## Workflow
 
@@ -35,13 +35,13 @@ Collect one month of merged PRs as evidence of creative work for the Polish IP B
 
 ```bash
 nua '((date now | format date %Y-%m-01) | into datetime) - 1day | format date %Y-%m'
-nua 'open ~/ipbox/ipbox.toml | get client.<client>'
+nua 'open ~/Documents/ipbox/ipbox.toml | get client.<client>'
 ```
 
 ### Step 2 - Fetch
 
 ```bash
-ipbox-fetch fetch <YYYY-MM> ~/ipbox/<YYYY-MM> <org>...
+ipbox-fetch fetch <YYYY-MM> ~/Documents/ipbox/<YYYY-MM> <org>...
 ```
 
 Pass every org from the config's `orgs` list. The script searches each org on its own and stops with the `gh` error when one is blocked, for example by SAML SSO. This writes `prs.json` and `patches/NNN_repo_title.patch` (full PR patch, all commits). A re-run replaces both and leaves the files from steps 4 to 6 alone. Each row carries a heuristic `class` (`rd`, `non-rd`, `review`) and `reason`, a `ticket` key, and `thin: true` when the body has under 40 words.
@@ -103,21 +103,21 @@ EN: R&D software development: <modules> with transfer of copyright, <month> <yea
 
 Ask the user for the share of creative work in the month as a percentage. The skill never estimates it.
 
-Append to `~/ipbox/months.csv` (create with a header when missing):
+Append to `~/Documents/ipbox/months.csv` (create with a header when missing):
 
 ```
 month,ip_id,share_pct,rd_prs,total_prs,invoice_pl,invoice_en
 ```
 
-Append the month rows to `~/ipbox/log.csv` (same header as the month log). Drop rows whose `url` is already present before you append.
+Append the month rows to `~/Documents/ipbox/log.csv` (same header as the month log). Drop rows whose `url` is already present before you append.
 
 ### Step 7 - Hash and hand over
 
 ```bash
-ipbox-fetch sums ~/ipbox/<YYYY-MM>
+ipbox-fetch sums ~/Documents/ipbox/<YYYY-MM>
 ```
 
-Show `git -C ~/ipbox status --short` and the first lines of `narratives.md`. Propose the commit message `<YYYY-MM>`. Do not commit. The user commits, and the commit date is the month-end proof.
+Show `git -C ~/Documents/ipbox status --short` and the first lines of `narratives.md`. Propose the commit message `<YYYY-MM>`. Do not commit. The user commits, and the commit date is the month-end proof.
 
 ### Important
 
