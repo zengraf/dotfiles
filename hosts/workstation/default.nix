@@ -21,15 +21,15 @@
   };
 
   system.defaults.dock.persistent-apps = [
-    "/Applications/Zen.app"
+    "/Applications/Crest.app"
     "/Applications/Telegram.app"
     "/Applications/Slack.app"
     "/Applications/Things3.app"
     "/Applications/1Password.app"
     "/Applications/Obsidian.app"
-    "/Applications/Notion.app"
     "/Applications/Zed.app"
     "/Applications/Ghostty.app"
+    "/Applications/Agterm.app"
   ];
 
   services.virby.memory = 8192;

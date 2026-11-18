@@ -26,7 +26,7 @@
   };
 
   system.defaults.dock.persistent-apps = [
-    "/Applications/Zen.app"
+    "/Applications/Crest.app"
     "/Applications/Telegram.app"
     "/Applications/Things3.app"
     "/Applications/1Password.app"
@@ -34,6 +34,7 @@
     "/Applications/Android Studio.app"
     "/Applications/Zed.app"
     "/Applications/Ghostty.app"
+    "/Applications/Agterm.app"
   ];
 
   services.virby = {
