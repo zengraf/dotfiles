@@ -49,8 +49,14 @@ prev.lib.optionalAttrs (prev.stdenv.hostPlatform.isDarwin && prev.stdenv.hostPla
       ];
 
       makeWrapperArgs = [
-        "--prefix PYTHONPATH : ${pyqt6Site}"
-        "--prefix PATH : ${final.openconnect}/bin"
+        "--prefix"
+        "PYTHONPATH"
+        ":"
+        "${pyqt6Site}"
+        "--prefix"
+        "PATH"
+        ":"
+        "${final.openconnect}/bin"
       ];
 
       meta = {
