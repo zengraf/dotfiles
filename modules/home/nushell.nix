@@ -23,6 +23,10 @@
         "/run/current-system/sw/bin"
         "/nix/var/nix/profiles/default/bin"
       ])
+
+      # nix-darwin exports this only from set-environment, which zsh and bash source and Nushell does not.
+      # Without it the claude wrapper skips NODE_EXTRA_CA_CERTS and TLS fails.
+      $env.NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt"
     '';
   };
 
