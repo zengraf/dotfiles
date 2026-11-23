@@ -4,7 +4,10 @@
   ...
 }:
 {
-  imports = [ ../../modules/darwin/aerospace.nix ];
+  imports = [
+    ../../modules/darwin/aerospace.nix
+    ../../modules/darwin/builders.nix
+  ];
 
   homebrew = {
     casks = [
