@@ -13,7 +13,6 @@
   boot = {
     # No growPartition: it pulls cloud-utils and with it all of python3, for
     # 135 MB, to enlarge a root filesystem a stateless node never fills.
-    initrd.systemd.enable = true;
     kernelParams = [
       "console=ttyS0"
       "panic=1"
